@@ -1,0 +1,83 @@
+# Registers must be accessed by their natural size.
+
+# to do adjust registers for version 1, also known as legacy
+# register byte layout
+# 0 magic 1953655158
+# 4 device version 1
+# 8 subsystem device identification
+# 12 subsystem vendor identification
+# 16 device features
+# 20 device features selection
+# 24 -
+# 32 driver features
+# 36 driver features selection
+# 40 -
+# 48 queue selection
+# 52 maximum queue size
+# 56 queue size
+# 60 -
+# 68 queue ready
+# 72 -
+# 80 queue notify
+# 84 -
+# 96 interrupt status
+# 100 interrupt acknowledge
+# 104 -
+# 112 device status
+# 116 -
+# 128 queue description address low
+# 132 queue description address high
+# 136 -
+# 144 queue driver address low
+# 148 queue driver address high
+# 152 -
+# 160 queue device address low
+# 164 queue device address high
+# 168 -
+# 240 configuration version
+# 244 -
+# 256 configuration
+
+# device identifications
+# 0 reserved
+# 1 network card
+# 2 block device
+# 3 console
+# 4 entropy source
+# 5 memory ballooning
+# 6 ioMemory
+# 7 rpmsg
+# 8 SCSI host
+# 9 9P transport
+# 10 mac80211 wlan
+# 11 rproc serial
+# 12 virtio CAIF
+# 13 memory balloon
+# 16 GPU device
+# 17 Timer/Clock device
+# 18 Input device
+# 19 Socket device
+# 20 Crypto device
+# 21 Signal Distribution Module
+# 22 pstore device
+# 23 IOMMU device
+# 24 Memory device
+
+align 4
+
+
+# in
+# 4 virtual input output address
+# out
+# 4 zero if virtual input output 1
+label virtual_input_output_1_identify
+lui 14 65536
+addi 15 0 10
+lwu 5 4 0
+lui 6 476967
+addi 6 6 -1674
+xor 6 6 5
+lwu 5 4 4
+xori 5 5 1
+or 4 5 6
+jalr 0 1 0

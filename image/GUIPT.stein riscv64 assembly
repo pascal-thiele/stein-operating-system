@@ -1,0 +1,104 @@
+# Give this file to the stein riscv64 assembler to create a bootable file. The bootable file contains the stein operating system and can be run in a virtual machine or written directly to the lowermost addresses of a memory device.
+
+# protective master boot record
+zero 446 # instructions
+byte 0 # boot indicator
+byte 0 # starting head
+byte 2 # starting sector
+byte 0 # starting track
+byte 238 # operating system type
+byte 0 # ending head
+byte 3 # ending sector
+byte 0 # ending track
+word 1 # starting logical block address
+word 32767 # size in logical block addresses
+zero 48 # three unused partitions
+halfword 43605 # signature
+
+# header
+doubleword 6075990659671082565 # signature
+word 65536 # version
+word 92 # header size in bytes
+word 0 # header cyclic redundancy check 32
+word 0 # reserved
+doubleword 1 # my logical block address
+doubleword 32767 # alternate logical block address
+doubleword 34 # first usable logical block address
+doubleword 32734 # last usable logical block address
+doubleword 817512491257129751 # disk globally unique identifier lower half
+doubleword 3125051720967131 # disk globally unique identifier upper half
+doubleword 2 # partition entry logical block address
+word 128 # number of partition entries
+word 128 # size of partition entry
+word 0 # partition entry array cyclic redundancy check 32
+zero 420
+
+# kernel partition entry
+doubleword 1250200000123 # type globally unique identifier lower half
+doubleword 20057681175 # type globally unique identifier upper half
+doubleword 9999991233866321 # partition globally unique identifier lower half
+doubleword 61250125810473658 # partition globally unique identifier upper half
+doubleword 34 # starting logical block address
+doubleword 4129 # ending logical block address
+zero 80
+
+# file system partition entry
+doubleword 9571809512598710033 # type globally unique identifier lower half
+doubleword 0 # type globally unique identifier upper half
+doubleword 5714975010042741431 # partition globally unique identifier lower half
+doubleword 486740122000135619 # partition globally unqiue identifier upper half
+doubleword 4130 # starting logical block address
+doubleword 32734 # ending logical block address
+zero 80
+
+# unused partitions
+zero 16128
+
+# kernel partition data
+include stein kernel.riscv64
+align 2114560
+
+# file system partition data
+string stein file system # file system identifier
+doubleword 2115156 # root file address
+
+align 16760320
+
+# backup kernel partition entry
+doubleword 1250200000123 # type globally unique identifier lower half
+doubleword 20057681175 # type globally unique identifier upper half
+doubleword 9999991233866321 # partition globally unique identifier lower half
+doubleword 61250125810473658 # partition globally unique identifier upper half
+doubleword 34 # starting logical block address
+doubleword 4129 # ending logical block address
+zero 80
+
+# backup file system partition entry
+doubleword 9571809512598710033 # type globally unique identifier lower half
+doubleword 0 # type globally unique identifier upper half
+doubleword 5714975010042741431 # partition globally unique identifier lower half
+doubleword 486740122000135619 # partition globally unqiue identifier upper half
+doubleword 4130 # starting logical block address
+doubleword 32734 # ending logical block address
+zero 80
+
+# backup unused partitions
+zero 16128
+
+# backup header
+doubleword 6075990659671082565 # signature
+word 65536 # version
+word 92 # header size in bytes
+word 0 # header cyclic redundancy check 32
+word 0 # reserved
+doubleword 32767 # my logical block address
+doubleword 1 # alternate logical block address
+doubleword 34 # first usable logical block address
+doubleword 32734 # last usable logical block address
+doubleword 817512491257129751 # disk globally unique identifier lower half
+doubleword 3125051720967131 # disk globally unique identifier upper half
+doubleword 32735 # partition entry logical block address
+word 128 # number of partition entries
+word 128 # size of partition entry
+word 0 # partition entry array cyclic redundancy check 32
+zero 420

@@ -1,0 +1,3368 @@
+# header byte layout
+# 0 decimal 3490578157
+# 4 total size
+# 8 structure block offset
+# 12 strings block offset
+# 16 memory reservation block offset
+# 20 version
+# 24 last compatible version
+# 28 boot central processing unit identifier
+# 32 strings block size
+# 36 structure block size
+# 40
+
+# memory reservation byte layout
+# 0 address
+# 8 size
+# 16
+
+# node byte layout
+# 0 decimal 1
+# 4 name
+
+# property byte layout
+# 0 decimal 3
+# 4 length
+# 8 name offset
+# 12 value
+
+align 4
+
+
+# in
+# 4 device tree 17 address
+# out
+# 4 status
+label device_tree_17_identify
+lbu 5 4 0
+xori 6 5 208
+lbu 5 4 1
+xori 5 5 13
+or 6 6 5
+lbu 5 4 2
+xori 5 5 254
+or 6 6 5
+lbu 5 4 3
+xori 5 5 237
+or 6 6 5
+lbu 5 4 20
+or 6 6 5
+lbu 5 4 21
+or 6 6 5
+lbu 5 4 22
+or 6 6 5
+lbu 5 4 23
+xori 5 5 17
+or 4 5 6
+jalr 0 1 0
+
+
+# in
+# 4 device tree 17 address
+label device_tree_17_sifive_SPI_0_multi_media_card
+addi 2 2 -80
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+sd 20 2 40
+sd 21 2 48
+sd 22 2 56
+sd 23 2 64
+sd 24 2 72
+
+# get the strings block address
+addi 16 4 0
+addi 4 4 12
+call 1 device_tree_17_load_word
+add 17 16 4
+
+# enter the root node
+addi 4 16 8
+call 1 device_tree_17_load_word
+add 4 4 16
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_return
+call 1 device_tree_17_enter_node
+
+label device_tree_17_sifive_SPI_0_multi_media_card_soc_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_return
+addi 18 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_soc
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_soc_address
+addi 4 18 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_multi_media_card_soc_loop
+jal 0 device_tree_17_sifive_SPI_0_multi_media_card_return
+
+label device_tree_17_sifive_SPI_0_multi_media_card_soc_address
+addi 19 0 8
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_multi_media_card_soc_address_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_address-cells
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_soc_address_load
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_multi_media_card_soc_address_loop
+label device_tree_17_sifive_SPI_0_multi_media_card_soc_address_load
+addi 4 20 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 20 12
+call 1 device_tree_17_load
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_return
+addi 5 0 3
+bgeu 4 5 device_tree_17_sifive_SPI_0_multi_media_card_return
+slli 19 4 2
+
+label device_tree_17_sifive_SPI_0_multi_media_card_spi
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_multi_media_card_spi_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_return
+addi 18 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_spi
+bne 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_next
+
+# get the compatible property
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_multi_media_card_spi_compatible_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_next
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_compatible
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_compatible_comp
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_compatible_loop
+label device_tree_17_sifive_SPI_0_multi_media_card_spi_compatible_comp
+addi 4 20 12
+call 1 device_tree_17_compare_sifive,spi0
+bne 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_next
+
+# get the reg property
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_multi_media_card_spi_reg_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_next
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_reg
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_reg_load
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_reg_loop
+label device_tree_17_sifive_SPI_0_multi_media_card_spi_reg_load
+addi 4 20 12
+addi 5 19 0
+call 1 device_tree_17_load
+addi 20 4 0
+
+# get the clock-frequency property
+addi 21 18 0
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_multi_media_card_clock_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_clocks
+addi 22 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_clock-frequency
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_clock_load
+addi 4 22 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_multi_media_card_clock_loop
+
+label device_tree_17_sifive_SPI_0_multi_media_card_clocks
+addi 4 21 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_multi_media_card_clocks_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_next
+addi 22 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_clocks
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_clocks_load
+addi 4 22 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_multi_media_card_clocks_loop
+label device_tree_17_sifive_SPI_0_multi_media_card_clocks_load
+addi 4 22 12
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 16 0
+call 1 device_tree_17_phandle
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_next
+addi 21 4 0
+call 1 device_tree_17_enter_node
+jal 0 device_tree_17_sifive_SPI_0_multi_media_card_clock_loop
+
+label device_tree_17_sifive_SPI_0_multi_media_card_clock_load
+addi 4 22 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 22 12
+call 1 device_tree_17_load
+addi 21 4 0
+
+# get the address-cells property
+addi 22 0 8
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_multi_media_card_spi_address_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_mmc
+addi 23 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_address-cells
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_address_load
+addi 4 23 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_address_loop
+label device_tree_17_sifive_SPI_0_multi_media_card_spi_address_load
+addi 4 23 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 23 12
+call 1 device_tree_17_load
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_next
+addi 5 0 3
+bgeu 4 5 device_tree_17_sifive_SPI_0_multi_media_card_spi_next
+slli 22 4 2
+
+label device_tree_17_sifive_SPI_0_multi_media_card_mmc
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_multi_media_card_mmc_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_next
+addi 23 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_mmc
+bne 4 0 device_tree_17_sifive_SPI_0_multi_media_card_mmc_next
+
+# get the compatible property
+addi 4 23 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_multi_media_card_mmc_compatible_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_mmc_next
+addi 24 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_compatible
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_mmc_compatible_comp
+addi 4 24 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_multi_media_card_mmc_compatible_loop
+label device_tree_17_sifive_SPI_0_multi_media_card_mmc_compatible_comp
+addi 4 24 12
+call 1 device_tree_17_compare_mmc-spi-slot
+bne 4 0 device_tree_17_sifive_SPI_0_multi_media_card_mmc_next
+
+# get the reg property
+addi 4 23 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_multi_media_card_mmc_reg_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_mmc_next
+addi 24 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_reg
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_mmc_reg_load
+addi 4 24 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_multi_media_card_mmc_reg_loop
+label device_tree_17_sifive_SPI_0_multi_media_card_mmc_reg_load
+addi 4 24 12
+addi 5 22 0
+call 1 device_tree_17_load
+addi 24 4 0
+
+# write to the device list
+call 1 device_allocate
+beq 4 0 device_tree_17_sifive_SPI_0_multi_media_card_return
+addi 5 0 11
+sd 5 4 8
+sd 20 4 16
+addi 5 0 120
+sd 5 4 24
+sd 21 4 32
+sd 24 4 40
+
+label device_tree_17_sifive_SPI_0_multi_media_card_mmc_next
+addi 4 23 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_multi_media_card_mmc_loop
+
+label device_tree_17_sifive_SPI_0_multi_media_card_spi_next
+addi 4 18 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_multi_media_card_spi_loop
+
+label device_tree_17_sifive_SPI_0_multi_media_card_return
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+ld 21 2 48
+ld 22 2 56
+ld 23 2 64
+ld 24 2 72
+addi 2 2 80
+jalr 0 1 0
+
+
+# in
+# 4 device tree 17 address
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR
+addi 2 2 -88
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+sd 20 2 40
+sd 21 2 48
+sd 22 2 56
+sd 23 2 64
+sd 24 2 72
+sd 25 2 80
+
+# get the strings block address
+addi 16 4 0
+addi 4 4 12
+call 1 device_tree_17_load_word
+add 17 16 4
+
+# enter the root node
+addi 4 16 8
+call 1 device_tree_17_load_word
+add 4 4 16
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_return
+call 1 device_tree_17_enter_node
+
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_soc_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_return
+addi 18 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_soc
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_soc_address-cells
+addi 4 18 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_soc_loop
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_return
+
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_soc_address-cells
+addi 19 0 8
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_soc_address-cells_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_address-cells
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_soc_address-cells_load
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_soc_address-cells_loop
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_soc_address-cells_load
+addi 4 20 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 20 12
+call 1 device_tree_17_load
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_return
+addi 5 0 3
+bgeu 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_return
+slli 19 4 2
+
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_return
+addi 18 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_spi
+bne 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_next
+
+# compare the compatible property
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_compatible_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_next
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_compatible
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_compatible_compare
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_compatible_loop
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_compatible_compare
+addi 4 20 12
+call 1 device_tree_17_compare_sifive,spi0
+bne 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_next
+
+# get the reg property
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_reg_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_next
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_reg
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_reg_load
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_reg_loop
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_reg_load
+addi 4 20 12
+addi 5 19 0
+call 1 device_tree_17_load
+addi 20 4 0
+
+# get the clock-frequency property
+addi 21 18 0
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clock_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clocks
+addi 22 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_clock-frequency
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clock_load
+addi 4 22 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clock_loop
+
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clocks
+addi 4 21 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clocks_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_next
+addi 22 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_clocks
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clocks_load
+addi 4 22 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clocks_loop
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clocks_load
+addi 4 22 12
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 16 0
+call 1 device_tree_17_phandle
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_next
+addi 21 4 0
+call 1 device_tree_17_enter_node
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clock_loop
+
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_clock_load
+addi 4 22 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 22 12
+call 1 device_tree_17_load
+addi 21 4 0
+
+# get the spi address-cells property
+addi 22 0 8
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_address-cells_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash
+addi 23 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_address-cells
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_address-cells_load
+addi 4 23 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_address-cells_loop
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_address-cells_load
+addi 4 23 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 23 12
+call 1 device_tree_17_load
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_next
+addi 5 0 3
+bgeu 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_next
+slli 22 4 2
+
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_next
+addi 23 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_flash
+bne 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_next
+
+# compare the flash compatible property
+addi 4 23 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_compatible_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_next
+addi 24 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_compatible
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_compatible_comp
+addi 4 24 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_compatible_loop
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_compatible_comp
+addi 4 24 12
+call 1 device_tree_17_compare_jedec,spi-nor
+bne 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_next
+
+# get the flash reg property
+addi 4 23 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_reg_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_next
+addi 24 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_reg
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_reg_load
+addi 4 24 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_reg_loop
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_reg_load
+addi 4 24 12
+addi 5 22 0
+call 1 device_tree_17_load
+addi 24 4 0
+
+# write the device
+call 1 device_allocate
+beq 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_next
+sd 20 4 16
+addi 5 0 120
+sd 5 4 24
+sd 21 4 32
+sd 24 4 40
+
+# allocate the device in the kernel
+addi 8 0 10
+addi 9 20 0
+addi 10 0 120
+ecall
+beq 8 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_identify
+sb 0 4 0
+jal 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_next
+
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_identify
+addi 25 4 0
+addi 4 20 0
+addi 5 21 0
+addi 6 24 0
+call 1 sifive_SPI_0_micron_M25P80_initialize
+addi 4 20 0
+call 1 sifive_SPI_0_micron_M25P80_read_identification
+
+# free the device in the kernel
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+
+# micron M25P80
+lui 5 202
+addi 5 5 20
+addi 6 0 12
+beq 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_type
+
+# ISSI IS25LP032
+lui 5 2518
+addi 5 5 22
+addi 6 0 4
+beq 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_type
+
+# ISSI IS25LP064
+addi 5 5 1
+addi 6 0 5
+beq 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_type
+
+# ISSI IS25LP128
+addi 5 5 1
+addi 6 0 6
+beq 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_type
+
+# ISSI IS25LP256D
+addi 5 5 1
+addi 6 0 9
+beq 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_type
+
+# ISSI IS25WP032
+lui 5 2519
+addi 5 5 22
+addi 6 0 1
+beq 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_type
+
+# ISSI IS25WP064
+addi 5 5 1
+addi 6 0 2
+beq 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_type
+
+# ISSI IS25WP128
+addi 5 5 1
+addi 6 0 3
+beq 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_type
+
+# ISSI IS25WP256D
+addi 5 5 1
+addi 6 0 7
+beq 4 5 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_type
+
+# unknown
+lui 6 0
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_type
+sd 6 25 8
+
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_next
+addi 4 23 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_flash_loop
+
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_next
+addi 4 18 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_spi_loop
+
+label device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR_return
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+ld 21 2 48
+ld 22 2 56
+ld 23 2 64
+ld 24 2 72
+ld 25 2 80
+addi 2 2 88
+jalr 0 1 0
+
+
+# in
+# 4 device tree 17 address
+label device_tree_17_sifive_SPI_0_micron_M25P80
+addi 2 2 -80
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+sd 20 2 40
+sd 21 2 48
+sd 22 2 56
+sd 23 2 64
+sd 24 2 72
+
+# get the strings block address
+addi 16 4 0
+addi 4 4 12
+call 1 device_tree_17_load_word
+add 17 16 4
+
+# enter the root node
+addi 4 16 8
+call 1 device_tree_17_load_word
+add 4 4 16
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_return
+call 1 device_tree_17_enter_node
+
+label device_tree_17_sifive_SPI_0_micron_M25P80_soc_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_return
+addi 18 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_soc
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_address-cells
+addi 4 18 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_soc_loop
+jal 0 device_tree_17_sifive_SPI_0_micron_M25P80_return
+
+label device_tree_17_sifive_SPI_0_micron_M25P80_address-cells
+addi 19 0 8
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_micron_M25P80_address-cells_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_address-cells
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_address-cells_load
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_micron_M25P80_address-cells_loop
+label device_tree_17_sifive_SPI_0_micron_M25P80_address-cells_load
+addi 4 20 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 20 12
+call 1 device_tree_17_load
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_return
+addi 5 0 3
+bgeu 4 5 device_tree_17_sifive_SPI_0_micron_M25P80_return
+slli 19 4 2
+
+label device_tree_17_sifive_SPI_0_micron_M25P80_spi
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_micron_M25P80_spi_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_return
+addi 18 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_spi
+bne 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_next
+
+# get the spi compatible property
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_micron_M25P80_spi_compatible_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_next
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_compatible
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_compatible_compare
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_compatible_loop
+label device_tree_17_sifive_SPI_0_micron_M25P80_spi_compatible_compare
+addi 4 20 12
+call 1 device_tree_17_compare_sifive,spi0
+bne 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_next
+
+# get the spi reg property
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_micron_M25P80_spi_reg_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_next
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_reg
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_reg_load
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_reg_loop
+label device_tree_17_sifive_SPI_0_micron_M25P80_spi_reg_load
+addi 4 20 12
+addi 5 19 0
+call 1 device_tree_17_load
+addi 20 4 0
+
+# get the clock-frequency property
+addi 21 18 0
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_micron_M25P80_clock_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_clocks
+addi 22 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_clock-frequency
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_clock_load
+addi 4 22 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_micron_M25P80_clock_loop
+
+label device_tree_17_sifive_SPI_0_micron_M25P80_clocks
+addi 4 21 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_micron_M25P80_clocks_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_next
+addi 22 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_clocks
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_clocks_load
+addi 4 22 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_micron_M25P80_clocks_loop
+label device_tree_17_sifive_SPI_0_micron_M25P80_clocks_load
+addi 4 22 12
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 16 0
+call 1 device_tree_17_phandle
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_next
+addi 21 4 0
+call 1 device_tree_17_enter_node
+jal 0 device_tree_17_sifive_SPI_0_micron_M25P80_clock_loop
+
+label device_tree_17_sifive_SPI_0_micron_M25P80_clock_load
+addi 4 22 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 22 12
+call 1 device_tree_17_load
+addi 21 4 0
+
+# get the spi address-cells property
+addi 22 0 8
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_micron_M25P80_spi_address-cells_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash
+addi 23 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_address-cells
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_address-cells_load
+addi 4 23 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_address-cells_loop
+label device_tree_17_sifive_SPI_0_micron_M25P80_spi_address-cells_load
+addi 4 23 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 23 12
+call 1 device_tree_17_load
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_next
+addi 5 0 3
+bgeu 4 5 device_tree_17_sifive_SPI_0_micron_M25P80_spi_next
+slli 22 4 2
+
+label device_tree_17_sifive_SPI_0_micron_M25P80_flash
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_micron_M25P80_flash_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_next
+addi 23 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_flash
+bne 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_next
+
+# get the flash compatible property
+addi 4 23 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_micron_M25P80_flash_compatible_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_next
+addi 24 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_compatible
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_compatible_comp
+addi 4 24 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_compatible_loop
+label device_tree_17_sifive_SPI_0_micron_M25P80_flash_compatible_comp
+addi 4 24 12
+call 1 device_tree_17_compare_micron,m25p80
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_jedec,spi-nor
+bne 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_next
+
+label device_tree_17_sifive_SPI_0_micron_M25P80_flash_reg
+addi 4 23 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_micron_M25P80_flash_reg_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_next
+addi 24 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_reg
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_reg_load
+addi 4 24 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_reg_loop
+label device_tree_17_sifive_SPI_0_micron_M25P80_flash_reg_load
+addi 4 24 12
+addi 5 22 0
+call 1 device_tree_17_load
+addi 24 4 0
+
+# identify the device
+addi 8 0 10
+addi 9 20 0
+addi 10 0 120
+ecall
+bne 8 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_next
+addi 4 20 0
+addi 5 21 0
+addi 6 24 0
+call 1 sifive_SPI_0_micron_M25P80_initialize
+addi 4 20 0
+call 1 sifive_SPI_0_micron_M25P80_read_identification
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+lui 5 514
+addi 5 5 20
+bne 4 5 device_tree_17_sifive_SPI_0_micron_M25P80_flash_next
+
+# write the device
+call 1 device_allocate
+beq 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_return
+addi 5 0 12
+sd 5 4 8
+sd 20 4 16
+addi 5 0 120
+sd 5 4 24
+sd 21 4 32
+sd 24 4 40
+
+label device_tree_17_sifive_SPI_0_micron_M25P80_flash_next
+addi 4 23 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_flash_loop
+
+label device_tree_17_sifive_SPI_0_micron_M25P80_spi_next
+addi 4 18 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_micron_M25P80_spi_loop
+
+label device_tree_17_sifive_SPI_0_micron_M25P80_return
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+ld 21 2 48
+ld 22 2 56
+ld 23 2 64
+ld 24 2 72
+addi 2 2 80
+jalr 0 1 0
+
+
+# in
+# 4 device tree 17 address
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032
+addi 2 2 -88
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+sd 20 2 40
+sd 21 2 48
+sd 22 2 56
+sd 23 2 64
+sd 24 2 72
+sd 25 2 80
+
+# get the strings block address
+addi 16 4 0
+addi 4 4 12
+call 1 device_tree_17_load_word
+add 17 16 4
+
+# enter the root node
+addi 4 16 8
+call 1 device_tree_17_load_word
+add 4 4 16
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_return
+call 1 device_tree_17_enter_node
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_soc_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_return
+addi 18 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_soc
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_address-cells
+addi 4 18 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_soc_loop
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_return
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_address-cells
+addi 19 0 8
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_address-cells_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_address-cells
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_address-cells_load
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_address-cells_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_address-cells_load
+addi 4 20 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 20 12
+call 1 device_tree_17_load
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_return
+addi 5 0 3
+bgeu 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_return
+slli 19 4 2
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_return
+addi 18 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_spi
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_next
+
+# get the spi compatible property
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_compatible_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_next
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_compatible
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_compatible_comp
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_compatible_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_compatible_comp
+addi 4 20 12
+call 1 device_tree_17_compare_sifive,spi0
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_next
+
+# get the spi reg property
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_reg_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_next
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_reg
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_reg_load
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_reg_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_reg_load
+addi 4 20 12
+addi 5 19 0
+call 1 device_tree_17_load
+addi 20 4 0
+
+# get the clock-frequency property
+addi 21 18 0
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clock_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clocks
+addi 22 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_clock-frequency
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clock_load
+addi 4 22 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clock_loop
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clocks
+addi 4 21 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clocks_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_next
+addi 22 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_clocks
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clocks_load
+addi 4 22 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clocks_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clocks_load
+addi 4 22 12
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 16 0
+call 1 device_tree_17_phandle
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_next
+addi 21 4 0
+call 1 device_tree_17_enter_node
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clock_loop
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_clock_load
+addi 4 22 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 22 12
+call 1 device_tree_17_load
+addi 21 4 0
+
+# get the spi address-cells property
+addi 22 0 8
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_cells_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash
+addi 23 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_address-cells
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_cells_load
+addi 4 23 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_cells_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_cells_load
+addi 4 23 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 23 12
+call 1 device_tree_17_load
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_next
+addi 5 0 3
+bgeu 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_next
+slli 22 4 2
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_next
+addi 23 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_flash
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_next
+
+# get the flash compatible property
+addi 4 23 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_compatible_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_next
+addi 24 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_compatible
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_compatible_comp
+addi 4 24 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_compatible_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_compatible_comp
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25wp032
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25wp064
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25wp128
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25lp032
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25lp064
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25lp128
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_jedec,spi-nor
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_next
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg
+addi 4 23 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_next
+addi 24 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_reg
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg_load
+addi 4 24 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_reg_load
+addi 4 24 12
+addi 5 22 0
+call 1 device_tree_17_load
+addi 24 4 0
+
+# identify the device
+addi 8 0 10
+addi 9 20 0
+addi 10 0 120
+ecall
+bne 8 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_next
+addi 4 20 0
+addi 5 21 0
+addi 6 24 0
+call 1 sifive_SPI_0_micron_M25P80_initialize
+addi 4 20 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_identification
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+addi 25 0 1
+lui 5 2519
+addi 5 5 22
+beq 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_write_device
+addi 25 0 2
+lui 5 2519
+addi 5 5 23
+beq 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_write_device
+addi 25 0 3
+lui 5 2519
+addi 5 5 24
+beq 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_write_device
+addi 25 0 4
+lui 5 2518
+addi 5 5 22
+beq 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_write_device
+addi 25 0 5
+lui 5 2518
+addi 5 5 23
+beq 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_write_device
+addi 25 0 6
+lui 5 2518
+addi 5 5 24
+bne 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_next
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_write_device
+call 1 device_allocate
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_return
+sd 25 4 8
+sd 20 4 16
+addi 5 0 120
+sd 5 4 24
+sd 21 4 32
+sd 24 4 40
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_next
+addi 4 23 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_flash_loop
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_next
+addi 4 18 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP032_spi_loop
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP032_return
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+ld 21 2 48
+ld 22 2 56
+ld 23 2 64
+ld 24 2 72
+ld 25 2 80
+addi 2 2 88
+jalr 0 1 0
+
+
+# in
+# 4 device tree 17 address
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256
+addi 2 2 -88
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+sd 20 2 40
+sd 21 2 48
+sd 22 2 56
+sd 23 2 64
+sd 24 2 72
+sd 25 2 80
+
+# get the strings block address
+addi 16 4 0
+addi 4 4 12
+call 1 device_tree_17_load_word
+add 17 16 4
+
+# enter the root node
+addi 4 16 8
+call 1 device_tree_17_load_word
+add 4 4 16
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_return
+call 1 device_tree_17_enter_node
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_soc_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_return
+addi 18 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_soc
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_address-cells
+addi 4 18 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_soc_loop
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_return
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_address-cells
+addi 19 0 8
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_address-cells_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_address-cells
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_address-cells_load
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_address-cells_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_address-cells_load
+addi 4 20 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 20 12
+call 1 device_tree_17_load
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_return
+addi 5 0 3
+bgeu 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_return
+slli 19 4 2
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_return
+addi 18 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_spi
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_next
+
+# get the compatible property
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_compatible_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_next
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_compatible
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_compatible_compare
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_compatible_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_compatible_compare
+addi 4 20 12
+call 1 device_tree_17_compare_sifive,spi0
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_next
+
+# get the reg property
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_reg_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_next
+addi 20 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_reg
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_reg_load
+addi 4 20 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_reg_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_reg_load
+addi 4 20 12
+addi 5 19 0
+call 1 device_tree_17_load
+addi 20 4 0
+
+# get the clock-frequency property
+addi 21 18 0
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clock_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clocks
+addi 22 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_clock-frequency
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clock_load
+addi 4 22 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clock_loop
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clocks
+addi 4 21 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clocks_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_next
+addi 22 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_clocks
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clocks_load
+addi 4 22 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clocks_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clocks_load
+addi 4 22 12
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 16 0
+call 1 device_tree_17_phandle
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_next
+addi 21 4 0
+call 1 device_tree_17_enter_node
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clock_loop
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_clock_load
+addi 4 22 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 22 12
+call 1 device_tree_17_load
+addi 21 4 0
+
+# get the spi address-cells property
+addi 22 0 8
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_address_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash
+addi 23 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_address-cells
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_address_load
+addi 4 23 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_address_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_address_load
+addi 4 23 4
+call 1 device_tree_17_load_word
+addi 5 4 0
+addi 4 23 12
+call 1 device_tree_17_load
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_next
+addi 5 0 3
+bgeu 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_next
+slli 22 4 2
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash
+addi 4 18 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_loop
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_next
+addi 23 4 0
+addi 4 4 4
+call 1 device_tree_17_compare_flash
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_next
+
+# get the flash compatible property
+addi 4 23 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_compat_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_next
+addi 24 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_compatible
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_compat_compare
+addi 4 24 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_compat_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_compat_compare
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25wp256
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25lp256
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25wp256d
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25wp256e
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25lp256d
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_issi,is25lp256e
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg
+addi 4 24 12
+call 1 device_tree_17_compare_jedec,spi-nor
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_next
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg
+addi 4 23 0
+call 1 device_tree_17_enter_node
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg_loop
+call 1 device_tree_17_seek_property
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_next
+addi 24 4 0
+addi 4 4 8
+call 1 device_tree_17_load_word
+add 4 4 17
+call 1 device_tree_17_compare_reg
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg_load
+addi 4 24 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg_loop
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_reg_load
+addi 4 24 12
+addi 5 22 0
+call 1 device_tree_17_load
+addi 24 4 0
+
+# identify the device
+addi 8 0 10
+addi 9 20 0
+addi 10 0 120
+ecall
+bne 8 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_next
+addi 4 20 0
+addi 5 21 0
+addi 6 24 0
+call 1 sifive_SPI_0_micron_M25P80_initialize
+addi 4 20 0
+call 1 sifive_SPI_0_ISSI_IS25WP256_read_identification
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+addi 25 0 7
+lui 5 2519
+addi 5 5 25
+beq 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_write_device
+addi 25 0 8
+lui 5 2518
+addi 5 5 25
+bne 4 5 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_next
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_write_device
+call 1 device_allocate
+beq 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_return
+sd 25 4 8
+sd 20 4 16
+addi 5 0 120
+sd 5 4 24
+sd 21 4 32
+sd 24 4 40
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_next
+addi 4 23 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_flash_loop
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_next
+addi 4 18 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_sifive_SPI_0_ISSI_IS25WP256_spi_loop
+
+label device_tree_17_sifive_SPI_0_ISSI_IS25WP256_return
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+ld 21 2 48
+ld 22 2 56
+ld 23 2 64
+ld 24 2 72
+ld 25 2 80
+addi 2 2 88
+jalr 0 1 0
+
+
+# in
+# 4 device tree 17 address
+# 5 phandle
+# out
+# 4 node address
+label device_tree_17_phandle
+addi 2 2 -2040
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+
+# get the strings block address
+addi 16 4 0
+addi 17 5 0
+addi 4 4 12
+call 1 device_tree_17_load_word
+add 18 16 4
+
+# enter the root node
+addi 4 16 8
+call 1 device_tree_17_load_word
+add 4 4 16
+call 1 device_tree_17_seek_node
+beq 4 0 device_tree_17_phandle_failure
+lui 19 0
+
+label device_tree_17_phandle_begin_node
+addi 16 4 0
+call 1 device_tree_17_load_word
+addi 5 0 1
+bne 4 5 device_tree_17_phandle_end_node
+addi 6 0 250
+beq 19 6 device_tree_17_phandle_failure
+slli 7 19 3
+add 7 7 2
+sd 16 7 40
+addi 19 19 1
+addi 4 16 0
+call 1 device_tree_17_enter_node
+jal 0 device_tree_17_phandle_begin_node
+
+label device_tree_17_phandle_end_node
+addi 5 0 2
+bne 4 5 device_tree_17_phandle_property
+addi 19 19 -1
+beq 19 0 device_tree_17_phandle_failure
+addi 4 16 4
+jal 0 device_tree_17_phandle_begin_node
+
+label device_tree_17_phandle_property
+addi 5 0 3
+bne 4 5 device_tree_17_phandle_nop
+addi 4 16 8
+call 1 device_tree_17_load_word
+add 4 4 18
+call 1 device_tree_17_compare_phandle
+bne 4 0 device_tree_17_phandle_property_skip
+addi 4 16 12
+call 1 device_tree_17_load_word
+bne 4 17 device_tree_17_phandle_property_skip
+addi 19 19 -1
+slli 19 19 3
+add 19 19 2
+ld 4 19 40
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 2040
+jalr 0 1 0
+label device_tree_17_phandle_property_skip
+addi 4 16 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_phandle_begin_node
+
+label device_tree_17_phandle_nop
+addi 5 0 4
+bne 4 5 device_tree_17_phandle_failure
+addi 4 16 4
+jal 0 device_tree_17_phandle_begin_node
+
+label device_tree_17_phandle_failure
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 2040
+jalr 0 1 0
+
+
+# in
+# 4 start address
+# out
+# 4 node address
+label device_tree_17_seek_node
+addi 2 2 -16
+sd 1 2 0
+sd 16 2 8
+
+label device_tree_17_seek_node_node
+addi 16 4 0
+call 1 device_tree_17_load_word
+addi 5 0 1
+bne 4 5 device_tree_17_seek_node_property
+addi 4 16 0
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+label device_tree_17_seek_node_property
+addi 5 0 3
+bne 4 5 device_tree_17_seek_node_nop
+addi 4 16 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_seek_node_node
+
+label device_tree_17_seek_node_nop
+addi 5 0 4
+bne 4 5 device_tree_17_seek_node_failure
+addi 4 16 4
+jal 0 device_tree_17_seek_node_node
+
+label device_tree_17_seek_node_failure
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+
+# in
+# 4 start address
+# out
+# 4 property address
+label device_tree_17_seek_property
+addi 2 2 -16
+sd 1 2 0
+sd 16 2 8
+
+label device_tree_17_seek_property_node
+addi 16 4 0
+call 1 device_tree_17_load_word
+addi 5 0 1
+bne 4 5 device_tree_17_seek_property_property
+addi 4 16 0
+call 1 device_tree_17_jump_node
+bne 4 0 device_tree_17_seek_property_node
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+label device_tree_17_seek_property_property
+addi 5 0 3
+bne 4 5 device_tree_17_seek_property_nop
+addi 4 16 0
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+label device_tree_17_seek_property_nop
+addi 5 0 4
+bne 4 5 device_tree_17_seek_property_failure
+addi 4 16 4
+jal 0 device_tree_17_seek_property_node
+
+label device_tree_17_seek_property_failure
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+
+# in
+# 4 node address
+# out
+# 4 first address after the node
+label device_tree_17_jump_node
+addi 2 2 -24
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+addi 16 0 1 # node depth
+call 1 device_tree_17_enter_node
+
+label device_tree_17_jump_node_begin
+addi 17 4 0
+call 1 device_tree_17_load_word
+addi 5 0 1
+bne 4 5 device_tree_17_jump_node_end
+addi 16 16 1
+addi 4 17 0
+call 1 device_tree_17_enter_node
+jal 0 device_tree_17_jump_node_begin
+
+label device_tree_17_jump_node_end
+addi 5 0 2
+bne 4 5 device_tree_17_jump_node_property
+addi 16 16 -1
+addi 4 17 4
+bne 16 0 device_tree_17_jump_node_begin
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+addi 2 2 24
+jalr 0 1 0
+
+label device_tree_17_jump_node_property
+addi 5 0 3
+bne 4 5 device_tree_17_jump_node_nop
+addi 4 17 0
+call 1 device_tree_17_jump_property
+jal 0 device_tree_17_jump_node_begin
+
+label device_tree_17_jump_node_nop
+addi 5 0 4
+bne 4 5 device_tree_17_jump_node_failure
+addi 4 17 4
+jal 0 device_tree_17_jump_node_begin
+
+label device_tree_17_jump_node_failure
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+addi 2 2 24
+jalr 0 1 0
+
+
+# in
+# 4 property address
+# out
+# 4 first address after the property
+label device_tree_17_jump_property
+lbu 5 4 4
+slli 5 5 8
+lbu 6 4 5
+add 5 5 6
+slli 5 5 8
+lbu 6 4 6
+add 5 5 6
+slli 5 5 8
+lbu 6 4 7
+add 5 5 6
+andi 6 5 3
+addi 7 0 4
+sub 7 7 6
+andi 7 7 3
+add 5 5 7
+add 4 4 5
+addi 4 4 12
+jalr 0 1 0
+
+
+# in
+# 4 node address
+# out
+# 4 first address after the begin node
+label device_tree_17_enter_node
+addi 4 4 4
+lui 5 0
+label device_tree_17_enter_node_loop
+lbu 6 4 0
+addi 4 4 1
+addi 5 5 1
+bne 6 0 device_tree_17_enter_node_loop
+andi 5 5 3
+addi 7 0 4
+sub 7 7 5
+andi 7 7 3
+add 4 4 7
+jalr 0 1 0
+
+
+# in
+# 4 address
+# 5 size
+# out
+# 4 data
+label device_tree_17_load
+lui 6 0
+beq 5 0 device_tree_17_load_return
+lbu 6 4 0
+addi 5 5 -1
+beq 5 0 device_tree_17_load_return
+slli 6 6 8
+lbu 7 4 1
+add 6 6 7
+addi 5 5 -1
+beq 5 0 device_tree_17_load_return
+slli 6 6 8
+lbu 7 4 2
+add 6 6 7
+addi 5 5 -1
+beq 5 0 device_tree_17_load_return
+slli 6 6 8
+lbu 7 4 3
+add 6 6 7
+addi 5 5 -1
+beq 5 0 device_tree_17_load_return
+slli 6 6 8
+lbu 7 4 4
+add 6 6 7
+addi 5 5 -1
+beq 5 0 device_tree_17_load_return
+slli 6 6 8
+lbu 7 4 5
+add 6 6 7
+addi 5 5 -1
+beq 5 0 device_tree_17_load_return
+slli 6 6 8
+lbu 7 4 6
+add 6 6 7
+addi 5 5 -1
+beq 5 0 device_tree_17_load_return
+slli 6 6 8
+lbu 7 4 7
+add 6 6 7
+label device_tree_17_load_return
+addi 4 6 0
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 word
+label device_tree_17_load_word
+lbu 5 4 0
+slli 5 5 8
+lbu 6 4 1
+add 5 5 6
+slli 5 5 8
+lbu 6 4 2
+add 5 5 6
+slli 5 5 8
+lbu 6 4 3
+add 4 5 6
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 doubleword
+label device_tree_17_load_doubleword
+lbu 5 4 0
+slli 5 5 8
+lbu 6 4 1
+add 5 5 6
+slli 5 5 8
+lbu 6 4 2
+add 5 5 6
+slli 5 5 8
+lbu 6 4 3
+add 5 5 6
+slli 5 5 8
+lbu 6 4 4
+add 5 5 6
+slli 5 5 8
+lbu 6 4 5
+add 5 5 6
+slli 5 5 8
+lbu 6 4 6
+add 5 5 6
+slli 5 5 8
+lbu 6 4 7
+add 4 5 6
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_address-cells
+lbu 5 4 0
+addi 6 0 35
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 1
+addi 6 0 97
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 2
+addi 6 0 100
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 3
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 4
+addi 6 0 114
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 5
+addi 6 0 101
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 7
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 8
+addi 6 0 45
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 9
+addi 6 0 99
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 10
+addi 6 0 101
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 11
+addi 6 0 108
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 12
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 13
+addi 6 0 115
+bne 5 6 device_tree_17_compare_address-cells_failure
+lbu 5 4 14
+bne 5 0 device_tree_17_compare_address-cells_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_address-cells_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_size-cells
+lbu 5 4 0
+addi 6 0 35
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 2
+addi 6 0 105
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 3
+addi 6 0 122
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 4
+addi 6 0 101
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 5
+addi 6 0 45
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 6
+addi 6 0 99
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 7
+addi 6 0 101
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 8
+addi 6 0 108
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 9
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 10
+addi 6 0 115
+bne 5 6 device_tree_17_compare_size-cells_failure
+lbu 5 4 11
+bne 5 0 device_tree_17_compare_size-cells_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_size-cells_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_reg
+lbu 5 4 0
+addi 6 0 114
+bne 5 6 device_tree_17_compare_reg_failure
+lbu 5 4 1
+addi 6 0 101
+bne 5 6 device_tree_17_compare_reg_failure
+lbu 5 4 2
+addi 6 0 103
+bne 5 6 device_tree_17_compare_reg_failure
+lbu 5 4 3
+bne 5 0 device_tree_17_compare_reg_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_reg_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_cpus
+lbu 5 4 0
+addi 6 0 99
+bne 5 6 device_tree_17_compare_cpus_failure
+lbu 5 4 1
+addi 6 0 112
+bne 5 6 device_tree_17_compare_cpus_failure
+lbu 5 4 2
+addi 6 0 117
+bne 5 6 device_tree_17_compare_cpus_failure
+lbu 5 4 3
+addi 6 0 115
+bne 5 6 device_tree_17_compare_cpus_failure
+lbu 5 4 4
+bne 5 0 device_tree_17_compare_cpus_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_cpus_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_compatible
+lbu 5 4 0
+addi 6 0 99
+bne 5 6 device_tree_17_compare_compatible_failure
+lbu 5 4 1
+addi 6 0 111
+bne 5 6 device_tree_17_compare_compatible_failure
+lbu 5 4 2
+addi 6 0 109
+bne 5 6 device_tree_17_compare_compatible_failure
+lbu 5 4 3
+addi 6 0 112
+bne 5 6 device_tree_17_compare_compatible_failure
+lbu 5 4 4
+addi 6 0 97
+bne 5 6 device_tree_17_compare_compatible_failure
+lbu 5 4 5
+addi 6 0 116
+bne 5 6 device_tree_17_compare_compatible_failure
+lbu 5 4 6
+addi 6 0 105
+bne 5 6 device_tree_17_compare_compatible_failure
+lbu 5 4 7
+addi 6 0 98
+bne 5 6 device_tree_17_compare_compatible_failure
+lbu 5 4 8
+addi 6 0 108
+bne 5 6 device_tree_17_compare_compatible_failure
+lbu 5 4 9
+addi 6 0 101
+bne 5 6 device_tree_17_compare_compatible_failure
+lbu 5 4 10
+bne 5 0 device_tree_17_compare_compatible_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_compatible_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_soc
+lbu 5 4 0
+addi 6 0 115
+bne 5 6 device_tree_17_compare_soc_failure
+lbu 5 4 1
+addi 6 0 111
+bne 5 6 device_tree_17_compare_soc_failure
+lbu 5 4 2
+addi 6 0 99
+bne 5 6 device_tree_17_compare_soc_failure
+lbu 5 4 3
+bne 5 0 device_tree_17_compare_soc_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_soc_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_spi
+lbu 5 4 0
+addi 6 0 115
+bne 5 6 device_tree_17_compare_spi_failure
+lbu 5 4 1
+addi 6 0 112
+bne 5 6 device_tree_17_compare_spi_failure
+lbu 5 4 2
+addi 6 0 105
+bne 5 6 device_tree_17_compare_spi_failure
+lbu 5 4 3
+beq 5 0 device_tree_17_compare_spi_success
+addi 6 0 64
+bne 5 6 device_tree_17_compare_spi_failure
+label device_tree_17_compare_spi_success
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_spi_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_sifive,spi0
+lbu 5 4 0
+addi 6 0 115
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 1
+addi 6 0 105
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 2
+addi 6 0 102
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 4
+addi 6 0 118
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 5
+addi 6 0 101
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 6
+addi 6 0 44
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 7
+addi 6 0 115
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 8
+addi 6 0 112
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 9
+addi 6 0 105
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 10
+addi 6 0 48
+bne 5 6 device_tree_17_compare_sifive,spi0_failure
+lbu 5 4 11
+bne 5 0 device_tree_17_compare_sifive,spi0_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_sifive,spi0_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_flash
+lbu 5 4 0
+addi 6 0 102
+bne 5 6 device_tree_17_compare_flash_failure
+lbu 5 4 1
+addi 6 0 108
+bne 5 6 device_tree_17_compare_flash_failure
+lbu 5 4 2
+addi 6 0 97
+bne 5 6 device_tree_17_compare_flash_failure
+lbu 5 4 3
+addi 6 0 115
+bne 5 6 device_tree_17_compare_flash_failure
+lbu 5 4 4
+addi 6 0 104
+bne 5 6 device_tree_17_compare_flash_failure
+lbu 5 4 5
+beq 5 0 device_tree_17_compare_flash_success
+addi 6 0 64
+bne 5 6 device_tree_17_compare_flash_failure
+label device_tree_17_compare_flash_success
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_flash_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_mmc
+lbu 5 4 0
+addi 6 0 109
+bne 5 6 device_tree_17_compare_mmc_failure
+lbu 5 4 1
+bne 5 6 device_tree_17_compare_mmc_failure
+lbu 5 4 2
+addi 6 0 99
+bne 5 6 device_tree_17_compare_mmc_failure
+lbu 5 4 3
+beq 5 0 device_tree_17_compare_mmc_success
+addi 6 0 64
+bne 5 6 device_tree_17_compare_mmc_failure
+label device_tree_17_compare_mmc_success
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_mmc_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_mmc-spi-slot
+lbu 5 4 0
+addi 6 0 109
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 1
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 2
+addi 6 0 99
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 3
+addi 6 0 45
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 4
+addi 6 0 115
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 5
+addi 6 0 112
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 6
+addi 6 0 105
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 7
+addi 6 0 45
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 8
+addi 6 0 115
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 9
+addi 6 0 108
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 10
+addi 6 0 111
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 11
+addi 6 0 116
+bne 5 6 device_tree_17_compare_mmc-spi-slot_failure
+lbu 5 4 12
+bne 5 0 device_tree_17_compare_mmc-spi-slot_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_mmc-spi-slot_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_jedec,spi-nor
+lbu 5 4 0
+addi 6 0 106
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 1
+addi 6 0 101
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 2
+addi 6 0 100
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 3
+addi 6 0 101
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 4
+addi 6 0 99
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 5
+addi 6 0 44
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 7
+addi 6 0 112
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 8
+addi 6 0 105
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 9
+addi 6 0 45
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 10
+addi 6 0 110
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 11
+addi 6 0 111
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 12
+addi 6 0 114
+bne 5 6 device_tree_17_compare_jedec,spi-nor_failure
+lbu 5 4 13
+bne 5 0 device_tree_17_compare_jedec,spi-nor_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_jedec,spi-nor_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_micron,m25p80
+lbu 5 4 0
+addi 6 0 109
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 1
+addi 6 0 105
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 2
+addi 6 0 99
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 3
+addi 6 0 114
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 4
+addi 6 0 111
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 5
+addi 6 0 110
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 6
+addi 6 0 44
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 7
+addi 6 0 109
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 8
+addi 6 0 50
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 9
+addi 6 0 53
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 11
+addi 6 0 56
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 12
+addi 6 0 48
+bne 5 6 device_tree_17_compare_micron,m25p80_failure
+lbu 5 4 13
+bne 5 0 device_tree_17_compare_micron,m25p80_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_micron,m25p80_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25wp032
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 9
+addi 6 0 119
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 11
+addi 6 0 48
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 12
+addi 6 0 51
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 13
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp032_failure
+lbu 5 4 14
+bne 5 0 device_tree_17_compare_issi,is25wp032_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25wp032_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25wp064
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 9
+addi 6 0 119
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 11
+addi 6 0 48
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 12
+addi 6 0 54
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 13
+addi 6 0 52
+bne 5 6 device_tree_17_compare_issi,is25wp064_failure
+lbu 5 4 14
+bne 5 0 device_tree_17_compare_issi,is25wp064_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25wp064_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25wp128
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 9
+addi 6 0 119
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 11
+addi 6 0 49
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 12
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 13
+addi 6 0 56
+bne 5 6 device_tree_17_compare_issi,is25wp128_failure
+lbu 5 4 14
+bne 5 0 device_tree_17_compare_issi,is25wp128_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25wp128_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25lp032
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 9
+addi 6 0 108
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 11
+addi 6 0 48
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 12
+addi 6 0 51
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 13
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp032_failure
+lbu 5 4 14
+bne 5 0 device_tree_17_compare_issi,is25lp032_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25lp032_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25lp064
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 9
+addi 6 0 108
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 11
+addi 6 0 48
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 12
+addi 6 0 54
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 13
+addi 6 0 52
+bne 5 6 device_tree_17_compare_issi,is25lp064_failure
+lbu 5 4 14
+bne 5 0 device_tree_17_compare_issi,is25lp064_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25lp064_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25lp128
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 9
+addi 6 0 108
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 11
+addi 6 0 49
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 12
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 13
+addi 6 0 56
+bne 5 6 device_tree_17_compare_issi,is25lp128_failure
+lbu 5 4 14
+bne 5 0 device_tree_17_compare_issi,is25lp128_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25lp128_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25wp256
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 9
+addi 6 0 119
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 11
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 12
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 13
+addi 6 0 54
+bne 5 6 device_tree_17_compare_issi,is25wp256_failure
+lbu 5 4 14
+bne 5 0 device_tree_17_compare_issi,is25wp256_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25wp256_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25wp256d
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 9
+addi 6 0 119
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 11
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 12
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 13
+addi 6 0 54
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 14
+addi 6 0 100
+bne 5 6 device_tree_17_compare_issi,is25wp256d_failure
+lbu 5 4 15
+bne 5 0 device_tree_17_compare_issi,is25wp256d_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25wp256d_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25wp256e
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 9
+addi 6 0 119
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 11
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 12
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 13
+addi 6 0 54
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 14
+addi 6 0 101
+bne 5 6 device_tree_17_compare_issi,is25wp256e_failure
+lbu 5 4 15
+bne 5 0 device_tree_17_compare_issi,is25wp256e_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25wp256e_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25lp256
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 9
+addi 6 0 108
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 11
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 12
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 13
+addi 6 0 54
+bne 5 6 device_tree_17_compare_issi,is25lp256_failure
+lbu 5 4 14
+bne 5 0 device_tree_17_compare_issi,is25lp256_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25lp256_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25lp256d
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 9
+addi 6 0 108
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 11
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 12
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 13
+addi 6 0 54
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 14
+addi 6 0 100
+bne 5 6 device_tree_17_compare_issi,is25lp256d_failure
+lbu 5 4 15
+bne 5 0 device_tree_17_compare_issi,is25lp256d_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25lp256d_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_issi,is25lp256e
+lbu 5 4 0
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 1
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 2
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 3
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 4
+addi 6 0 44
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 5
+addi 6 0 105
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 6
+addi 6 0 115
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 7
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 8
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 9
+addi 6 0 108
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 10
+addi 6 0 112
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 11
+addi 6 0 50
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 12
+addi 6 0 53
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 13
+addi 6 0 54
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 14
+addi 6 0 101
+bne 5 6 device_tree_17_compare_issi,is25lp256e_failure
+lbu 5 4 15
+bne 5 0 device_tree_17_compare_issi,is25lp256e_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_issi,is25lp256e_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_phandle
+lbu 5 4 0
+addi 6 0 112
+bne 5 6 device_tree_17_compare_phandle_failure
+lbu 5 4 1
+addi 6 0 104
+bne 5 6 device_tree_17_compare_phandle_failure
+lbu 5 4 2
+addi 6 0 97
+bne 5 6 device_tree_17_compare_phandle_failure
+lbu 5 4 3
+addi 6 0 110
+bne 5 6 device_tree_17_compare_phandle_failure
+lbu 5 4 4
+addi 6 0 100
+bne 5 6 device_tree_17_compare_phandle_failure
+lbu 5 4 5
+addi 6 0 108
+bne 5 6 device_tree_17_compare_phandle_failure
+lbu 5 4 6
+addi 6 0 101
+bne 5 6 device_tree_17_compare_phandle_failure
+lbu 5 4 7
+bne 5 0 device_tree_17_compare_phandle_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_phandle_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_clocks
+lbu 5 4 0
+addi 6 0 99
+bne 5 6 device_tree_17_compare_clocks_failure
+lbu 5 4 1
+addi 6 0 108
+bne 5 6 device_tree_17_compare_clocks_failure
+lbu 5 4 2
+addi 6 0 111
+bne 5 6 device_tree_17_compare_clocks_failure
+lbu 5 4 3
+addi 6 0 99
+bne 5 6 device_tree_17_compare_clocks_failure
+lbu 5 4 4
+addi 6 0 107
+bne 5 6 device_tree_17_compare_clocks_failure
+lbu 5 4 5
+addi 6 0 115
+bne 5 6 device_tree_17_compare_clocks_failure
+lbu 5 4 6
+bne 5 0 device_tree_17_compare_clocks_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_clocks_failure
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 address
+# out
+# 4 status
+label device_tree_17_compare_clock-frequency
+lbu 5 4 0
+addi 6 0 99
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 1
+addi 6 0 108
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 2
+addi 6 0 111
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 3
+addi 6 0 99
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 4
+addi 6 0 107
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 5
+addi 6 0 45
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 6
+addi 6 0 102
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 7
+addi 6 0 114
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 8
+addi 6 0 101
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 9
+addi 6 0 113
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 10
+addi 6 0 117
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 11
+addi 6 0 101
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 12
+addi 6 0 110
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 13
+addi 6 0 99
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 14
+addi 6 0 121
+bne 5 6 device_tree_17_compare_clock-frequency_failure
+lbu 5 4 15
+bne 5 0 device_tree_17_compare_clock-frequency_failure
+lui 4 0
+jalr 0 1 0
+label device_tree_17_compare_clock-frequency_failure
+lui 4 1
+jalr 0 1 0

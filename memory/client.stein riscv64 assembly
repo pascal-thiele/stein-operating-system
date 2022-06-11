@@ -1,0 +1,125 @@
+# client list byte layout
+# 0 existence flag
+# 1 -
+# 8 device address
+# 16 address
+# 24 size
+# 32 name
+# 288
+
+align 4
+
+
+# out
+# 4 client address
+label client_allocate
+ll 4 client_list
+addi 5 0 256
+label client_allocate_loop
+lbu 6 4 0
+beq 6 0 client_allocate_write
+# also use the element if the client process does not exist
+addi 8 0 7
+addi 9 4 32
+ecall
+bne 8 0 client_allocate_return
+addi 4 4 288
+addi 5 5 -1
+bne 5 0 client_allocate_loop
+lui 4 0
+jalr 0 1 0
+label client_allocate_write
+addi 5 0 1
+sb 5 4 0
+label client_allocate_return
+jalr 0 1 0
+
+
+# in
+# 4 offset
+label client_increment_device_addresses
+ll 5 client_list
+addi 6 0 256
+label client_increment_device_addresses_loop
+lbu 7 5 0
+beq 7 0 client_increment_device_addresses_next
+ld 8 5 8
+add 8 8 4
+sd 8 5 8
+label client_increment_device_addresses_next
+addi 5 5 288
+addi 6 6 -1
+bne 6 0 client_increment_device_addresses_loop
+jalr 0 1 0
+
+
+# in
+# 4 device address
+# 5 address
+# 6 size
+# out
+# 4 client address
+label client_seek_overlapped
+ll 7 client_list
+addi 8 0 256
+label client_seek_overlapped_loop
+lbu 9 7 0
+beq 9 0 client_seek_overlapped_next
+ld 10 7 8
+bne 10 4 client_seek_overlapped_next
+ld 11 7 16
+bltu 11 5 client_seek_overlapped_low
+sub 11 11 5
+bgeu 11 6 client_seek_overlapped_next
+addi 4 7 0
+jalr 0 1 0
+label client_seek_overlapped_low
+sub 11 5 11
+ld 12 7 24
+bgeu 11 12 client_seek_overlapped_next
+addi 4 7 0
+jalr 0 1 0
+label client_seek_overlapped_next
+addi 7 7 288
+addi 8 8 -1
+bne 8 0 client_seek_overlapped_loop
+lui 4 0
+jalr 0 1 0
+
+
+# in
+# 4 device address
+# 5 address
+# 6 size
+# out
+# 4 client address
+label client_seek_contained
+ll 7 client_list
+addi 8 0 256
+label client_seek_contained_loop
+lbu 9 7 0
+beq 9 0 client_seek_contained_next
+ld 10 7 8
+bne 10 4 client_seek_contained_next
+ld 11 7 16
+bltu 5 11 client_seek_contained_next
+sub 11 11 5
+add 11 11 6
+ld 12 7 24
+bltu 12 11 client_seek_contained_next
+addi 4 7 0
+jalr 0 1 0
+label client_seek_contained_next
+addi 7 7 288
+addi 8 8 -1
+bne 8 0 client_seek_contained_loop
+lui 4 0
+jalr 0 1 0
+
+
+align 8
+
+label client_list
+zero 73728 # 256 clients
+
+label end

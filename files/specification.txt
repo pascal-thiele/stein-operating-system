@@ -1,0 +1,30 @@
+All multibyte values are stored least significant byte first, ascending to the most significant byte. The lowermost addresses of the formatted memory contain a header, which identifies the file system and lists any contained files.
+
+header byte layout
+0 identification one quadrillion (1000000000000000000)
+8 file list size in bytes
+16 file list
+
+The file list locates and describes any contained file. A file locates a contiguous address range in memory, with fifteen tags to identify its content. Files with address or size set to zero are unused and may be overwritten. Files with address not zero, size not zero and all tags set to zero contain free memory.
+
+file byte layout
+0 address
+8 size
+16 tag 1
+272 tag 2
+528 tag 3
+784 tag 4
+1040 tag 5
+1296 tag 6
+1552 tag 7
+1808 tag 8
+2064 tag 9
+2320 tag 10
+2576 tag 11
+2832 tag 12
+3088 tag 13
+3344 tag 14
+3600 tag 15
+3856
+
+Error correction is often taken care of on a device level and implementing another layer of error correction in a file system mainly increases memory usage per byte of user data. Furthermore, computer systems may not require high data integrity and may benefit more from lower memory usage. Therefore, the stein file system does not implement any error checks or error corrections.

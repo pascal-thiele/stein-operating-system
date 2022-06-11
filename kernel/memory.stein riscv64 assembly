@@ -1,0 +1,270 @@
+# memory byte layout
+# 0 address
+# 8 size
+# 16
+
+# Memory is considered free if its address or size is zero.
+# When freeing memory, clear the address and the size.
+
+align 4
+
+
+label memory_clear
+ll 4 memory_list
+addi 5 0 1040
+label memory_clear_seek
+sd 0 4 0
+sd 0 4 8
+addi 4 4 16
+addi 5 5 -1
+bne 5 0 memory_clear_seek
+jalr 0 1 0
+
+
+# in
+# 4 address
+# 5 size
+label memory_free
+ll 6 memory_list
+addi 7 0 1040
+label memory_free_merge_loop
+ld 8 6 0
+beq 8 0 memory_free_merge_next
+ld 9 6 8
+beq 9 0 memory_free_merge_next
+bltu 8 4 memory_free_merge_high
+sub 8 8 4
+bne 8 5 memory_free_merge_next
+add 5 5 9
+sd 0 6 0
+sd 0 6 8
+jal 0 memory_free_merge_next
+
+label memory_free_merge_high
+sub 8 4 8
+bne 8 9 memory_free_merge_next
+sub 4 4 9
+add 5 5 9
+sd 0 6 0
+sd 0 6 8
+
+label memory_free_merge_next
+addi 6 6 16
+addi 7 7 -1
+bne 7 0 memory_free_merge_loop
+
+# seek an unused memory element
+ll 6 memory_list
+addi 7 0 1040
+label memory_free_seek
+ld 8 6 0
+beq 8 0 memory_free_write
+ld 9 6 8
+beq 9 0 memory_free_write
+addi 6 6 16
+addi 7 7 -1
+bne 7 0 memory_free_seek
+jalr 0 1 0
+
+label memory_free_write
+sd 4 6 0
+sd 5 6 8
+jalr 0 1 0
+
+
+# in
+# 4 size
+# out
+# 4 address
+# 5 size
+label memory_allocate
+# round size up to a multiple of 4096
+lui 6 1
+addi 6 6 -1
+add 4 4 6
+and 5 4 6
+sub 5 4 5
+
+# seek the first address range of sufficient size
+ll 7 memory_list
+addi 8 0 1040
+label memory_allocate_seek_first_loop
+ld 9 7 0
+beq 9 0 memory_allocate_seek_first_next
+ld 10 7 8
+bgeu 6 10 memory_allocate_seek_first_next
+add 11 9 6
+and 12 11 6
+sub 11 11 12
+sub 11 11 9
+sub 11 10 11
+bgeu 11 5 memory_allocate_seek_lower
+label memory_allocate_seek_first_next
+addi 7 7 16
+addi 8 8 -1
+bne 8 0 memory_allocate_seek_first_loop
+lui 4 0
+lui 5 0
+jalr 0 1 0
+
+label memory_allocate_seek_lower
+addi 8 8 -1
+beq 8 0 memory_allocate_address
+addi 11 7 16
+label memory_allocate_seek_lower_loop
+ld 12 11 0
+beq 12 0 memory_allocate_seek_lower_next
+bgeu 12 9 memory_allocate_seek_lower_next
+ld 13 11 8
+bgeu 6 13 memory_allocate_seek_lower_next
+add 14 12 6
+and 15 14 6
+sub 14 14 15
+sub 14 14 12
+sub 14 13 14
+bltu 14 5 memory_allocate_seek_lower_next
+addi 7 11 0
+addi 9 12 0
+addi 10 13 0
+label memory_allocate_seek_lower_next
+addi 11 11 16
+addi 8 8 -1
+bne 8 0 memory_allocate_seek_lower_loop
+
+label memory_allocate_address
+add 4 9 6
+and 11 4 6
+sub 4 4 11
+
+# clear the entire memory element
+bne 4 9 memory_allocate_separate_high
+bne 5 10 memory_allocate_separate_low
+sd 0 7 0
+sd 0 7 8
+jalr 0 1 0
+
+label memory_allocate_separate_high
+sub 11 4 9
+sd 11 7 8
+add 11 11 5
+beq 11 10 memory_allocate_return
+
+# separate middle
+ll 7 memory_list
+addi 8 0 1040
+label memory_allocate_separate_middle_loop
+ld 12 7 0
+beq 12 0 memory_allocate_separate_middle_write
+ld 13 7 8
+beq 13 0 memory_allocate_separate_middle_write
+addi 7 7 16
+addi 8 8 -1
+bne 8 0 memory_allocate_separate_middle_loop
+jalr 0 1 0
+label memory_allocate_separate_middle_write
+add 9 9 11
+sd 9 7 0
+sub 10 10 11
+sd 10 7 8
+label memory_allocate_return
+jalr 0 1 0
+
+label memory_allocate_separate_low
+add 9 9 5
+sd 9 7 0
+sub 10 10 5
+sd 10 7 8
+jalr 0 1 0
+
+
+# in
+# 4 address
+# 5 size
+label memory_banish
+ll 6 memory_list
+addi 7 0 1040
+label memory_banish_seek
+ld 8 6 0
+beq 8 0 memory_banish_next
+ld 9 6 8
+bltu 8 4 memory_banish_high
+sub 8 8 4
+bgeu 8 5 memory_banish_next
+add 8 8 9
+bgeu 5 8 memory_banish_all
+add 9 4 5
+sd 9 6 0
+sub 8 8 5
+sd 9 6 8
+jal 0 memory_banish_next
+
+label memory_banish_high
+sub 10 4 8
+sd 10 6 8
+add 10 10 5
+bgeu 10 9 memory_banish_next
+
+# split
+add 8 8 10
+sub 9 9 10
+ll 10 memory_list
+addi 11 0 1040
+label memory_banish_split_loop
+ld 12 10 0
+beq 12 0 memory_banish_split_write
+ld 13 10 8
+beq 13 0 memory_banish_split_write
+addi 10 10 16
+addi 11 11 -1
+bne 11 0 memory_banish_split_loop
+jal 0 memory_banish_next
+label memory_banish_split_write
+sd 8 10 0
+sd 9 10 8
+jal 0 memory_banish_next
+
+label memory_banish_all
+sd 0 6 0
+sd 0 6 8
+
+label memory_banish_next
+addi 6 6 16
+addi 7 7 -1
+bne 7 0 memory_banish_seek
+jalr 0 1 0
+
+
+# in
+# 4 address
+# 5 size
+# out
+# 4 zero if any address range overlaps
+label memory_overlap
+ll 6 memory_list
+addi 7 0 1040
+label memory_overlap_seek
+ld 8 6 0
+bltu 8 4 memory_overlap_less
+sub 8 8 4
+bgeu 8 5 memory_overlap_next
+lui 4 0
+jalr 0 1 0
+label memory_overlap_less
+sub 8 4 8
+ld 9 6 8
+bgeu 8 9 memory_overlap_next
+lui 4 0
+jalr 0 1 0
+label memory_overlap_next
+addi 6 6 16
+addi 7 7 -1
+bne 7 0 memory_overlap_seek
+lui 4 1
+jalr 0 1 0
+
+
+align 8
+
+# 1040 memory elements are allocated, because it correlates to the amount of process elements, with an additional few memory elements for edge cases.
+label memory_list
+zero 16640

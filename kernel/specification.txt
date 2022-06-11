@@ -1,0 +1,135 @@
+# SYSTEM REQUIREMENTS
+
+- RISC-V 64 bit architecture
+- clock with a comparator and timer interrupts
+- atomic memory operations
+- multiply and divide operations
+- user mode
+- misa register
+- unlocked physical memory protection registers zero through three
+
+If a requirement is not met, the affected thread will idle indefinitely.
+
+
+# NO DYNAMIC LINKING
+
+Dynamic linking allows code to be used in multiple processes while existing only once in main memory, which in turn reduces the memory footprint. However, dynamic linking adds general overhead if used by only one user program, clutters file systems with separate library files and pollutes program binaries with library references.
+
+User programs are always statically linked, meaning all needed code is located in the program itself. If code needs to be loaded dynamically, the user program shall manually read from external memory.
+
+
+# PROCESS SCHEDULING WITHOUT PREFERENCE
+
+Affinity masks allow the user to define which hardware threads a process shall be run on and isolate particular hardware threads from processes. While process priorities influence the order in which processes are processed and may delay execution of less important processes.
+
+Affinity masks and process priorities can optimize the operation of running processes, but they introduce general overhead in scheduling routines and may be exploited to lock out user workload. Considering that affinity masks and process priorities are very situational and are complex to maintain for the kernel and the user, they are not implemented.
+
+
+# NO SOFTWARE THREADS
+
+Software threads divide processes into separately executable parts, while utilizing memory of the same address space. Specifically large ranges of memory can be shared efficiently between individual software threads of a process.
+
+Accessing the same address space from multiple software threads requires the user program to synchronize memory accesses. Additionally, some software thread interactions may require the kernel to synchronize hardware threads also. The kernel synchronizes hardware threads with processes already and allows overall efficient sharing of data by inter process communication. As a result software threads are redundant and are not implemented.
+
+
+# BOOT
+
+The stein kernel includes only routines that are needed to isolate parallel user program execution and associated address ranges in main memory. The address of a flattened device tree of version 17 is expected to be given in integer register 11 and machine mode interrupts shall be disabled, to ensure defined behaviour while the kernels exception handler is not initialized. Any other register may be undefined and can be set by the kernel itself.
+
+Drivers for clocks and external memory are part of the kernel, solely to utilize timer interrupts and load start programs. As more devices are developed, the kernel will include more drivers and will grow in size. Generally compatibility is preferred, but if the kernel grows to undesirable size rarely utilized drivers may be removed. Moreover, developers can always specialize the kernel to particular computer systems and cut out unnecessary drivers themselves.
+
+Initialization starts in machine mode, as the kernel always runs in machine mode. All hardware threads synchronize and register themselves in the thread list. The first thread to register analyzes underlying hardware, initializes remaining kernel structures and initializes the first processes. Once finished, all threads enter the main scheduler routine.
+
+
+# MEMORY MANAGEMENT
+
+The kernel and user programs address physical memory. Addressing physical memory in user programs implies fragmentation as memory is allocated and freed, but may only be noticable when allocating a lot of memory for a single process. Since the physical address space is shared between all loaded user programs, user programs shall be position independent and shall assume to be aligned to eight bytes.
+
+Processes are limited to one contiguous address range in main memory. At process initialization the address range size matches the size of the contained user program, but may be resized by the user program itself. The address of the address range is always defined by the kernel. The kernel tries to allocate lowermost addresses first, which keeps uppermost addresses free for bigger allocations that may not fit in the potentially fragmented lower addresses.
+
+User programs always have read, write and execute permissions on address ranges in main memory, because the internal security of user programs shall not be a concern of the kernel and avoids polluting program binaries with operating system data.
+
+
+# DEVICES
+
+Devices are address ranges in the physical address space and may be registered through the binary interface of the kernel. The kernel solely limits devices to be accessible to a single process at a time and user programs have to analyze external devices themselves.
+
+Processes are only exposed to devices through the physical address space, to improve future compatibility and potentially efficiency also. Specifically, interrupts are not supported, because interrupts have to interfere with the scheduler queue and in turn may interfere with time critical user programs.
+
+
+# PROCESSES
+
+A process is a container for a user program and a logical abstraction of a single problem. This is the main unit the kernel works with when assigning system resources to user programs. Processes are identified by user defined names that are 256 bytes in size. The kernel treats names like integers, which makes them encoding independent.
+
+
+# SCHEDULER
+
+The scheduler orders execution of processes by linking processes with their preceding and succeeding processes to form a queue. Processes are scheduled by linking them with the last process, the back of the queue, and picked by unlinking the first process, the front of the queue.
+
+The picking routine checks the front of the queue for any process. The found process is removed from the queue and the succeeding process is made the front of the queue, in order to run the picked process for one decisecond. If the queue is empty and no process can be picked the kernel waits for one decisecond instead. Waiting ensures the executing thread eventually continues work on processes that may be scheduled by other threads, without constantly locking the kernel to check for new work. User programs may not need one decisecond of processing time and may manually request to be rescheduled instead.
+
+
+# REGISTER TRAY
+
+The values in the registers of a user program have to be saved when switching from a process and restored when switching to a process. The register tray is a range of memory the kernel stores all registers in, which resemble the current state of the process.
+
+Optional architecture extensions, such as the single precision floating point extension, are only stored and restored if implemented.
+
+
+# INTER PROCESS COMMUNICATION
+
+Processes can send messages through the kernel, copying 256 bytes to the process that matches the 256 byte recipient name. In order to receive messages, user programs have to provide a single message structure themselves and tell the kernel the address of the message at runtime. The message has to be located at an address that is a multiple of eight.
+
+Synchronization of the kernel and the recipient process is handled by the eight byte message status. If the status is set to zero, only the kernel may modify the message, if the status is set to not zero, only the user program may modify the message. The user program shall fence memory operations before setting the status to zero.
+
+message byte layout
+0 status
+8 sender name
+264 data
+520
+
+
+# INTERFACE
+
+The interface allows user programs to access kernel functions through environment calls. Integer register 8 identifies the kernel function and integer registers 9 through 15 may be used to pass additional function specific arguments. User programs shall assume integer registers 8 through 15 to change across environment calls, but any other register is saved.
+
+0 neutral
+
+1 allocate process
+Copies the program from the address in integer register 9 with the program size in bytes in integer register 10 to a new process. The program address and program size have to be a multiple of eight. On success zero is returned in integer register 8, not zero otherwise.
+
+2 free process
+Ends the process with the name at the address in integer register 9. The name address has to be a multiple of eight. If the specified process does not exist, no process is freed.
+
+3 reschedule
+Switches the context and schedules the caller process anew.
+
+4 exit
+Frees the caller process, its memory and device.
+
+5 resize
+Either appends or removes uppermost addresses in memory of the caller process to match the amount of bytes specified in integer register 9. Because a user program can only have one address range of memory at a time, the kernel may relocate the address range, which may require the user program to update internal absolute addresses. The amount of bytes to resize to has to be a multiple of eight. On success zero is returned in integer register 8, not zero otherwise.
+
+6 rename
+Copies the name at the address in integer register 9 to be the new name of the caller process. The name address has to be a multiple of eight and no other process has to have the name. On success zero is returned in integer register 8, not zero otherwise.
+
+7 check process existence
+Searches a process with the name at the address in integer register 9. The name address has to be a multiple of eight. If a process has a matching name, zero is returned in integer register 8, not zero otherwise.
+
+8 send message
+Searches the process that matches the name at the address in integer register 9 and copies 256 bytes from the address in integer register 10 to the message of the found process. The recipient name address and the data address have to be a multiple of eight. On success, zero is returned in integer register 8. If the message of the recipient is full or the recipient process does not exist, not zero is returned in integer register 8.
+
+9 register message
+Tells the kernel the message address of the caller process in integer register 9, where messages will be received in. The message address has to be a multiple of eight, but may be set to zero to prevent any new messages to be written to the caller process.
+
+10 allocate device
+Allocates an address range at the address in integer register 9 with the size in bytes in integer register 10. Only addresses that are not occupied by the kernel or any other process may be target. The address and size of the address range must be a multiple of eight, but may be zero to free the device and allow other processes access. On success zero is returned in integer register 8, not zero otherwise. Freeing the device with an address or size of zero, always succeeds and always returns zero in integer register 8.
+
+11 computer description size
+Returns the size in bytes of the computer description in integer register 8. If the kernel does not have a computer description, a size of zero is returned in integer register 8.
+
+12 copy computer description
+Copies the computer description to the address specified in integer register 9. The address has to be a multiple of eight. If the caller process does not provide enough memory, no changes are made.
+
+13 read clock
+Returns the amount of deciseconds the kernels clock counted so far in integer register 8, the amount of centiseconds in integer register 9 and the amount of milliseconds in integer register 10. The granularity of the values in integer register 8, integer register 9 and integer register 10 may deviate, if the hardware cannot count deciseconds, centiseconds or milliseconds. Instead, the nearest granularity will be chosen.

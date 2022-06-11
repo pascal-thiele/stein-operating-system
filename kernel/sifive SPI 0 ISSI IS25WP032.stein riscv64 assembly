@@ -1,0 +1,391 @@
+# usable on sifive SPI 0 ISSI IS25WP064
+# usable on sifive SPI 0 ISSI IS25WP128
+# usable on sifive SPI 0 ISSI IS25LP032
+# usable on sifive SPI 0 ISSI IS25LP064
+# usable on sifive SPI 0 ISSI IS25LP128
+
+# sifive SPI 0 ISSI IS25WP032 byte layout
+# 0 sckdiv
+# 4 sckmode
+# 8 -
+# 16 csid
+# 20 csdef
+# 24 csmode
+# 28 -
+# 40 delay0
+# 44 delay1
+# 48 -
+# 64 fmt
+# 68 -
+# 72 txdata
+# 76 rxdata
+# 80 txmark
+# 84 rxmark
+# 88 -
+# 96 fctrl
+# 100 ffmt
+# 104 -
+# 112 ie
+# 116 ip
+# 120
+
+# status register bit layout
+# 0 write in progress if high
+# 1 write is enabled if high
+# 2 block zero is write protected if high
+# 3 block one is write protected if high
+# 4 block two is write protected if high
+# 5 block three is write protected if high
+# 6 quad operation is enabled if high
+# 7 status register is write protected if high
+
+# a page is a contiguous address range with an address that is a multiple of 256 and a size of 256
+# a sector is a contiguous address range with an address that is a multiple of 4096 and a size of 4096
+
+align 4
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP032 address
+# 5 clock frequency
+# 6 chip select
+label sifive_SPI_0_ISSI_IS25WP032_initialize
+# configure the frequency to 50000000 hertz
+lui 7 24414
+addi 7 7 256
+divu 5 5 7
+beq 5 0 8
+addi 5 5 -1
+sw 5 4 0
+sw 0 4 4
+sw 6 4 16
+addi 7 0 -1
+sw 7 4 20
+sw 0 4 24
+lui 7 16
+addi 7 7 1
+sw 7 4 40
+addi 7 0 1
+sw 7 4 44
+lui 7 128
+sw 7 4 64
+sw 0 4 80
+sw 0 4 84
+sw 0 4 112
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP032 address
+# out
+# 4 identification
+label sifive_SPI_0_ISSI_IS25WP032_read_identification
+addi 2 2 -24
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+addi 16 4 0
+addi 5 0 2
+sw 5 4 24
+addi 5 0 159
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+slli 17 4 8
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+add 17 17 4
+slli 17 17 8
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+add 4 4 17
+sw 0 16 24
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+addi 2 2 24
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP032 address
+# out
+# 4 status register
+label sifive_SPI_0_ISSI_IS25WP032_read_status_register
+addi 2 2 -16
+sd 1 2 0
+sd 16 2 8
+addi 16 4 0
+addi 5 0 2
+sw 5 4 24
+addi 5 0 5
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+sw 0 16 24
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP032 address
+# 5 source address in device
+# 6 size
+# 7 destination address in memory
+label sifive_SPI_0_ISSI_IS25WP032_read
+addi 2 2 -40
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+addi 16 4 0
+addi 17 5 0
+addi 18 6 0
+addi 19 7 0
+addi 8 0 2
+sw 8 4 24
+addi 5 0 3
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+srli 5 17 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+andi 5 17 255
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+label sifive_SPI_0_ISSI_IS25WP032_read_loop
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+sb 4 19 0
+addi 19 19 1
+addi 18 18 -1
+bne 18 0 sifive_SPI_0_ISSI_IS25WP032_read_loop
+sw 0 16 24
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 40
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP032 address
+# 5 sector address
+label sifive_SPI_0_ISSI_IS25WP032_erase_sector
+addi 2 2 -24
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+
+addi 16 4 0
+addi 17 5 0
+addi 5 0 6
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+
+addi 4 0 2
+sw 4 16 24
+addi 4 16 0
+addi 5 0 32
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+srli 5 17 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+andi 5 17 255
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+sw 0 16 24
+
+label sifive_SPI_0_ISSI_IS25WP032_erase_sector_wait
+addi 4 0 2
+sw 4 16 24
+addi 4 16 0
+addi 5 0 5
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+sw 0 16 24
+andi 4 4 1
+bne 4 0 sifive_SPI_0_ISSI_IS25WP032_erase_sector_wait
+
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+addi 2 2 24
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP032 address
+# 5 source address in memory
+# 6 destination address in device
+label sifive_SPI_0_ISSI_IS25WP032_program_sector
+addi 2 2 -32
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+addi 16 4 0
+addi 17 5 2047
+addi 18 6 2047
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 -1791
+addi 6 18 -1791
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 -1535
+addi 6 18 -1535
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 -1279
+addi 6 18 -1279
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 -1023
+addi 6 18 -1023
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 -767
+addi 6 18 -767
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 -511
+addi 6 18 -511
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 -255
+addi 6 18 -255
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 1
+addi 6 18 1
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 257
+addi 6 18 257
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 513
+addi 6 18 513
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 769
+addi 6 18 769
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 1025
+addi 6 18 1025
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 1281
+addi 6 18 1281
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 1537
+addi 6 18 1537
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 4 16 0
+addi 5 17 1793
+addi 6 18 1793
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_page
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 32
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP032 address
+# 5 source address in memory
+# 6 destination address in device
+label sifive_SPI_0_ISSI_IS25WP032_program_page
+addi 2 2 -32
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+
+addi 16 4 0
+addi 17 5 0
+addi 18 6 0
+addi 5 0 6
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+
+addi 5 0 2
+sw 5 16 24
+addi 4 16 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+srli 5 18 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+srli 5 18 8
+andi 5 5 255
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+andi 5 18 255
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 18 0 256
+label sifive_SPI_0_ISSI_IS25WP032_program_page_loop
+addi 4 16 0
+lbu 5 17 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 17 17 1
+addi 18 18 -1
+bne 18 0 sifive_SPI_0_ISSI_IS25WP032_program_page_loop
+sw 0 16 24
+
+label sifive_SPI_0_ISSI_IS25WP032_program_page_wait
+addi 4 0 2
+sw 4 16 24
+addi 4 16 0
+addi 5 0 5
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_data
+sw 0 16 24
+andi 4 4 1
+bne 4 0 sifive_SPI_0_ISSI_IS25WP032_program_page_wait
+
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 32
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP032 address
+# 5 data
+# out
+# 4 data
+label sifive_SPI_0_ISSI_IS25WP032_data
+lw 6 4 72
+blt 6 0 -4
+sw 5 4 72
+lw 6 4 76
+blt 6 0 -4
+andi 4 6 255
+jalr 0 1 0

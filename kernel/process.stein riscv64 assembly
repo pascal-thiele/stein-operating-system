@@ -1,0 +1,786 @@
+# process byte layout
+# 0 existence flag
+# 1 -
+# 4 floating point control and status register
+# 8 preceding scheduled process address
+# 16 succeeding scheduled process address
+# 24 memory address
+# 32 memory size
+# 40 device address
+# 48 device size
+# 56 message address
+# 64 program counter
+# 72 integer register 1
+# 80 integer register 2
+# 88 integer register 3
+# 96 integer register 4
+# 104 integer register 5
+# 112 integer register 6
+# 120 integer register 7
+# 128 integer register 8
+# 136 integer register 9
+# 144 integer register 10
+# 152 integer register 11
+# 160 integer register 12
+# 168 integer register 13
+# 176 integer register 14
+# 184 integer register 15
+# 192 integer register 16
+# 200 integer register 17
+# 208 integer register 18
+# 216 integer register 19
+# 224 integer register 20
+# 232 integer register 21
+# 240 integer register 22
+# 248 integer register 23
+# 256 integer register 24
+# 264 integer register 25
+# 272 integer register 26
+# 280 integer register 27
+# 288 integer register 28
+# 296 integer register 29
+# 304 integer register 30
+# 312 integer register 31
+# 320 floating point register 0
+# 336 floating point register 1
+# 352 floating point register 2
+# 368 floating point register 3
+# 384 floating point register 4
+# 400 floating point register 5
+# 416 floating point register 6
+# 432 floating point register 7
+# 448 floating point register 8
+# 464 floating point register 9
+# 480 floating point register 10
+# 496 floating point register 11
+# 512 floating point register 12
+# 528 floating point register 13
+# 544 floating point register 14
+# 560 floating point register 15
+# 576 floating point register 16
+# 592 floating point register 17
+# 608 floating point register 18
+# 624 floating point register 19
+# 640 floating point register 20
+# 656 floating point register 21
+# 672 floating point register 22
+# 688 floating point register 23
+# 704 floating point register 24
+# 720 floating point register 25
+# 736 floating point register 26
+# 752 floating point register 27
+# 768 floating point register 28
+# 784 floating point register 29
+# 800 floating point register 30
+# 816 floating point register 31
+# 832 name tag
+# 1088
+
+# Process memory and process device are considered free if their address or size is zero. When freeing process memory or process device, clear the address and the size.
+
+align 4
+
+
+# out
+# 4 process address
+label process_allocate
+ll 4 process_list
+addi 5 0 1024
+label process_allocate_loop
+lbu 6 4 0
+beq 6 0 process_allocate_write
+addi 4 4 1088
+addi 5 5 -1
+bne 5 0 process_allocate_loop
+lui 4 0
+jalr 0 1 0
+label process_allocate_write
+addi 5 0 1
+sb 5 4 0
+jalr 0 1 0
+
+
+# in
+# 4 process address
+label process_schedule
+ld 5 process_queue_back_address
+beq 5 0 process_schedule_first
+sd 4 5 16
+sd 5 4 8
+sd 0 4 16
+sd 4 process_queue_back_address 5
+jalr 0 1 0
+label process_schedule_first
+sd 0 4 8
+sd 0 4 16
+sd 4 process_queue_front_address 5
+sd 4 process_queue_back_address 5
+jalr 0 1 0
+
+
+# out
+# 4 process address
+label process_pick
+ld 4 process_queue_front_address
+beq 4 0 process_pick_return
+ld 5 4 16
+sd 5 process_queue_front_address 6
+beq 5 0 process_pick_last
+sd 0 5 8
+label process_pick_return
+jalr 0 1 0
+label process_pick_last
+sd 0 process_queue_back_address 5
+jalr 0 1 0
+
+
+# in
+# 4 process address
+label process_cancel
+ld 5 4 8
+ld 6 4 16
+beq 5 0 process_cancel_front
+beq 6 0 process_cancel_back
+sd 6 5 16
+sd 5 6 8
+jalr 0 1 0
+label process_cancel_front
+beq 6 0 process_cancel_all
+sd 0 6 8
+sd 6 process_queue_front_address 4
+jalr 0 1 0
+label process_cancel_back
+sd 0 5 16
+sd 5 process_queue_back_address 4
+jalr 0 1 0
+label process_cancel_all
+sd 0 process_queue_front_address 4
+sd 0 process_queue_back_address 4
+jalr 0 1 0
+
+
+# in
+# 4 tag address
+# out
+# 4 process address
+label process_identify
+ll 5 process_list
+addi 6 0 1024
+label process_identify_loop
+lbu 7 5 0
+beq 7 0 process_identify_next
+ld 8 4 0
+ld 9 5 832
+xor 10 9 8
+ld 8 4 8
+ld 9 5 840
+xor 9 9 8
+or 10 10 9
+ld 8 4 16
+ld 9 5 848
+xor 9 9 8
+or 10 10 9
+ld 8 4 24
+ld 9 5 856
+xor 9 9 8
+or 10 10 9
+ld 8 4 32
+ld 9 5 864
+xor 9 9 8
+or 10 10 9
+ld 8 4 40
+ld 9 5 872
+xor 9 9 8
+or 10 10 9
+ld 8 4 48
+ld 9 5 880
+xor 9 9 8
+or 10 10 9
+ld 8 4 56
+ld 9 5 888
+xor 9 9 8
+or 10 10 9
+ld 8 4 64
+ld 9 5 896
+xor 9 9 8
+or 10 10 9
+ld 8 4 72
+ld 9 5 904
+xor 9 9 8
+or 10 10 9
+ld 8 4 80
+ld 9 5 912
+xor 9 9 8
+or 10 10 9
+ld 8 4 88
+ld 9 5 920
+xor 9 9 8
+or 10 10 9
+ld 8 4 96
+ld 9 5 928
+xor 9 9 8
+or 10 10 9
+ld 8 4 104
+ld 9 5 936
+xor 9 9 8
+or 10 10 9
+ld 8 4 112
+ld 9 5 944
+xor 9 9 8
+or 10 10 9
+ld 8 4 120
+ld 9 5 952
+xor 9 9 8
+or 10 10 9
+ld 8 4 128
+ld 9 5 960
+xor 9 9 8
+or 10 10 9
+ld 8 4 136
+ld 9 5 968
+xor 9 9 8
+or 10 10 9
+ld 8 4 144
+ld 9 5 976
+xor 9 9 8
+or 10 10 9
+ld 8 4 152
+ld 9 5 984
+xor 9 9 8
+or 10 10 9
+ld 8 4 160
+ld 9 5 992
+xor 9 9 8
+or 10 10 9
+ld 8 4 168
+ld 9 5 1000
+xor 9 9 8
+or 10 10 9
+ld 8 4 176
+ld 9 5 1008
+xor 9 9 8
+or 10 10 9
+ld 8 4 184
+ld 9 5 1016
+xor 9 9 8
+or 10 10 9
+ld 8 4 192
+ld 9 5 1024
+xor 9 9 8
+or 10 10 9
+ld 8 4 200
+ld 9 5 1032
+xor 9 9 8
+or 10 10 9
+ld 8 4 208
+ld 9 5 1040
+xor 9 9 8
+or 10 10 9
+ld 8 4 216
+ld 9 5 1048
+xor 9 9 8
+or 10 10 9
+ld 8 4 224
+ld 9 5 1056
+xor 9 9 8
+or 10 10 9
+ld 8 4 232
+ld 9 5 1064
+xor 9 9 8
+or 10 10 9
+ld 8 4 240
+ld 9 5 1072
+xor 9 9 8
+or 10 10 9
+ld 8 4 248
+ld 9 5 1080
+xor 9 9 8
+or 10 10 9
+bne 10 0 process_identify_next
+addi 4 5 0
+jalr 0 1 0
+label process_identify_next
+addi 5 5 1088
+addi 6 6 -1
+bne 6 0 process_identify_loop
+lui 4 0
+jalr 0 1 0
+
+
+# in
+# 4 address
+# 5 size
+# out
+# 4 status
+label process_overlap
+ll 6 process_list
+addi 7 0 1024
+
+label process_overlap_memory
+lbu 8 6 0
+beq 8 0 process_overlap_next
+ld 9 6 24
+bltu 9 4 process_overlap_memory_low
+sub 9 9 4
+bgeu 9 5 process_overlap_device
+lui 4 0
+jalr 0 1 0
+label process_overlap_memory_low
+sub 9 4 9
+ld 10 6 32
+bgeu 9 10 process_overlap_device
+lui 4 0
+jalr 0 1 0
+
+label process_overlap_device
+ld 11 6 40
+bltu 11 4 process_overlap_device_low
+sub 11 11 4
+bgeu 11 5 process_overlap_next
+lui 4 0
+jalr 0 1 0
+label process_overlap_device_low
+sub 11 4 11
+ld 12 6 48
+bgeu 11 12 process_overlap_next
+lui 4 0
+jalr 0 1 0
+
+label process_overlap_next
+addi 6 6 1088
+addi 7 7 -1
+bne 7 0 process_overlap_memory
+lui 4 1
+jalr 0 1 0
+
+
+# in
+# 4 process address
+label process_protect
+lui 5 1
+addi 5 5 -256
+ld 6 4 24
+ld 7 4 32
+add 7 7 6
+srli 6 6 2
+srli 7 7 2
+csrrw 0 6 pmpaddr0
+csrrw 0 7 pmpaddr1
+ld 8 4 40
+beq 8 0 process_protect_configure
+ld 9 4 48
+beq 9 0 process_protect_configure
+add 9 9 8
+srli 8 8 2
+srli 9 9 2
+csrrw 0 8 pmpaddr2
+csrrw 0 9 pmpaddr3
+lui 5 61441
+addi 5 5 -256
+label process_protect_configure
+csrrw 0 5 pmpcfg0
+jalr 0 1 0
+
+
+# in
+# 4 process address
+label process_store
+ld 6 3 16
+sd 6 4 72
+ld 6 3 24
+sd 6 4 80
+ld 6 3 32
+sd 6 4 88
+ld 6 3 40
+sd 6 4 96
+ld 6 3 48
+sd 6 4 104
+ld 6 3 56
+sd 6 4 112
+ld 6 3 64
+sd 6 4 120
+ld 6 3 72
+sd 6 4 128
+ld 6 3 80
+sd 6 4 136
+ld 6 3 88
+sd 6 4 144
+ld 6 3 96
+sd 6 4 152
+ld 6 3 104
+sd 6 4 160
+ld 6 3 112
+sd 6 4 168
+ld 6 3 120
+sd 6 4 176
+ld 6 3 128
+sd 6 4 184
+ld 6 3 136
+sd 6 4 192
+ld 6 3 144
+sd 6 4 200
+ld 6 3 152
+sd 6 4 208
+ld 6 3 160
+sd 6 4 216
+ld 6 3 168
+sd 6 4 224
+ld 6 3 176
+sd 6 4 232
+ld 6 3 184
+sd 6 4 240
+ld 6 3 192
+sd 6 4 248
+ld 6 3 200
+sd 6 4 256
+ld 6 3 208
+sd 6 4 264
+ld 6 3 216
+sd 6 4 272
+ld 6 3 224
+sd 6 4 280
+ld 6 3 232
+sd 6 4 288
+ld 6 3 240
+sd 6 4 296
+ld 6 3 248
+sd 6 4 304
+ld 6 3 256
+sd 6 4 312
+
+# program counter
+csrrs 5 0 mepc
+sd 5 4 64
+
+# Floating point registers are skipped, because virtual machines do not seem to support them completely. Once the majority of systems has full support for single precision floating point, double precision floating point or quad precision floating point operations, remove the jump and execute following operations.
+jalr 0 1 0
+
+# quad precision floating point
+csrrs 5 0 misa
+lui 6 16
+and 6 6 5
+beq 6 0 process_store_double_precision_floating_point
+csrrs 5 0 fcsr
+sw 5 4 4
+fsq 0 4 320
+fsq 1 4 336
+fsq 2 4 352
+fsq 3 4 368
+fsq 4 4 384
+fsq 5 4 400
+fsq 6 4 416
+fsq 7 4 432
+fsq 8 4 448
+fsq 9 4 464
+fsq 10 4 480
+fsq 11 4 496
+fsq 12 4 512
+fsq 13 4 528
+fsq 14 4 544
+fsq 15 4 560
+fsq 16 4 576
+fsq 17 4 592
+fsq 18 4 608
+fsq 19 4 624
+fsq 20 4 640
+fsq 21 4 656
+fsq 22 4 672
+fsq 23 4 688
+fsq 24 4 704
+fsq 25 4 720
+fsq 26 4 736
+fsq 27 4 752
+fsq 28 4 768
+fsq 29 4 784
+fsq 30 4 800
+fsq 31 4 816
+jalr 0 1 0
+
+label process_store_double_precision_floating_point
+addi 6 0 8
+and 6 6 5
+beq 6 0 process_store_single_precision_floating_point
+csrrs 5 0 fcsr
+sw 5 4 4
+fsd 0 4 320
+fsd 1 4 336
+fsd 2 4 352
+fsd 3 4 368
+fsd 4 4 384
+fsd 5 4 400
+fsd 6 4 416
+fsd 7 4 432
+fsd 8 4 448
+fsd 9 4 464
+fsd 10 4 480
+fsd 11 4 496
+fsd 12 4 512
+fsd 13 4 528
+fsd 14 4 544
+fsd 15 4 560
+fsd 16 4 576
+fsd 17 4 592
+fsd 18 4 608
+fsd 19 4 624
+fsd 20 4 640
+fsd 21 4 656
+fsd 22 4 672
+fsd 23 4 688
+fsd 24 4 704
+fsd 25 4 720
+fsd 26 4 736
+fsd 27 4 752
+fsd 28 4 768
+fsd 29 4 784
+fsd 30 4 800
+fsd 31 4 816
+jalr 0 1 0
+
+label process_store_single_precision_floating_point
+addi 6 0 32
+and 6 6 5
+beq 6 0 process_store_return
+csrrs 5 0 fcsr
+sw 5 4 4
+fsw 0 4 320
+fsw 1 4 336
+fsw 2 4 352
+fsw 3 4 368
+fsw 4 4 384
+fsw 5 4 400
+fsw 6 4 416
+fsw 7 4 432
+fsw 8 4 448
+fsw 9 4 464
+fsw 10 4 480
+fsw 11 4 496
+fsw 12 4 512
+fsw 13 4 528
+fsw 14 4 544
+fsw 15 4 560
+fsw 16 4 576
+fsw 17 4 592
+fsw 18 4 608
+fsw 19 4 624
+fsw 20 4 640
+fsw 21 4 656
+fsw 22 4 672
+fsw 23 4 688
+fsw 24 4 704
+fsw 25 4 720
+fsw 26 4 736
+fsw 27 4 752
+fsw 28 4 768
+fsw 29 4 784
+fsw 30 4 800
+fsw 31 4 816
+label process_store_return
+jalr 0 1 0
+
+
+# in
+# 4 process address
+label process_load
+ld 6 4 72
+sd 6 3 16
+ld 6 4 80
+sd 6 3 24
+ld 6 4 88
+sd 6 3 32
+ld 6 4 96
+sd 6 3 40
+ld 6 4 104
+sd 6 3 48
+ld 6 4 112
+sd 6 3 56
+ld 6 4 120
+sd 6 3 64
+ld 6 4 128
+sd 6 3 72
+ld 6 4 136
+sd 6 3 80
+ld 6 4 144
+sd 6 3 88
+ld 6 4 152
+sd 6 3 96
+ld 6 4 160
+sd 6 3 104
+ld 6 4 168
+sd 6 3 112
+ld 6 4 176
+sd 6 3 120
+ld 6 4 184
+sd 6 3 128
+ld 6 4 192
+sd 6 3 136
+ld 6 4 200
+sd 6 3 144
+ld 6 4 208
+sd 6 3 152
+ld 6 4 216
+sd 6 3 160
+ld 6 4 224
+sd 6 3 168
+ld 6 4 232
+sd 6 3 176
+ld 6 4 240
+sd 6 3 184
+ld 6 4 248
+sd 6 3 192
+ld 6 4 256
+sd 6 3 200
+ld 6 4 264
+sd 6 3 208
+ld 6 4 272
+sd 6 3 216
+ld 6 4 280
+sd 6 3 224
+ld 6 4 288
+sd 6 3 232
+ld 6 4 296
+sd 6 3 240
+ld 6 4 304
+sd 6 3 248
+ld 6 4 312
+sd 6 3 256
+
+# program counter
+ld 5 4 64
+csrrw 0 5 mepc
+
+# Floating point registers are skipped, because virtual machines do not seem to support them completely. Once the majority of systems has full support for single precision floating point, double precision floating point or quad precision floating point operations, remove the jump and execute following operations.
+jalr 0 1 0
+
+# quad precision floating point
+csrrs 5 0 misa
+lui 6 16
+and 6 6 5
+beq 6 0 process_load_double_precision_floating_point
+lwu 5 4 4
+csrrw 0 5 fcsr
+flq 0 4 320
+flq 1 4 336
+flq 2 4 352
+flq 3 4 368
+flq 4 4 384
+flq 5 4 400
+flq 6 4 416
+flq 7 4 432
+flq 8 4 448
+flq 9 4 464
+flq 10 4 480
+flq 11 4 496
+flq 12 4 512
+flq 13 4 528
+flq 14 4 544
+flq 15 4 560
+flq 16 4 576
+flq 17 4 592
+flq 18 4 608
+flq 19 4 624
+flq 20 4 640
+flq 21 4 656
+flq 22 4 672
+flq 23 4 688
+flq 24 4 704
+flq 25 4 720
+flq 26 4 736
+flq 27 4 752
+flq 28 4 768
+flq 29 4 784
+flq 30 4 800
+flq 31 4 816
+jalr 0 1 0
+
+label process_load_double_precision_floating_point
+addi 6 0 8
+and 6 6 5
+beq 6 0 process_load_single_precision_floating_point
+lwu 5 4 4
+csrrw 0 5 fcsr
+fld 0 4 320
+fld 1 4 336
+fld 2 4 352
+fld 3 4 368
+fld 4 4 384
+fld 5 4 400
+fld 6 4 416
+fld 7 4 432
+fld 8 4 448
+fld 9 4 464
+fld 10 4 480
+fld 11 4 496
+fld 12 4 512
+fld 13 4 528
+fld 14 4 544
+fld 15 4 560
+fld 16 4 576
+fld 17 4 592
+fld 18 4 608
+fld 19 4 624
+fld 20 4 640
+fld 21 4 656
+fld 22 4 672
+fld 23 4 688
+fld 24 4 704
+fld 25 4 720
+fld 26 4 736
+fld 27 4 752
+fld 28 4 768
+fld 29 4 784
+fld 30 4 800
+fld 31 4 816
+jalr 0 1 0
+
+label process_load_single_precision_floating_point
+addi 6 0 32
+and 6 6 5
+beq 6 0 process_load_return
+lwu 5 4 4
+csrrw 0 5 fcsr
+flw 0 4 320
+flw 1 4 336
+flw 2 4 352
+flw 3 4 368
+flw 4 4 384
+flw 5 4 400
+flw 6 4 416
+flw 7 4 432
+flw 8 4 448
+flw 9 4 464
+flw 10 4 480
+flw 11 4 496
+flw 12 4 512
+flw 13 4 528
+flw 14 4 544
+flw 15 4 560
+flw 16 4 576
+flw 17 4 592
+flw 18 4 608
+flw 19 4 624
+flw 20 4 640
+flw 21 4 656
+flw 22 4 672
+flw 23 4 688
+flw 24 4 704
+flw 25 4 720
+flw 26 4 736
+flw 27 4 752
+flw 28 4 768
+flw 29 4 784
+flw 30 4 800
+flw 31 4 816
+label process_load_return
+jalr 0 1 0
+
+
+align 8
+
+label process_queue_front_address
+doubleword 0
+
+label process_queue_back_address
+doubleword 0
+
+label process_list
+zero 1114112 # 1024 processes

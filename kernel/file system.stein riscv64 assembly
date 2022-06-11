@@ -1,0 +1,988 @@
+# master boot record byte layout
+# 0 boot code
+# 440 disk signature
+# 444 -
+# 446 first record boot indication
+# 447 first record start cylinder, head and sector
+# 450 first record type
+# 451 first record end cylinder, head and sector
+# 454 first record logical block address
+# 458 first record size in logical block addresses
+# 462 second record boot indication
+# 463 second record start cylinder, head and sector
+# 466 second record type
+# 467 second record end cylinder, head and sector
+# 470 second record logical block address
+# 474 second record size in logical block addresses
+# 478 third record boot indication
+# 479 third record start cylinder, head and sector
+# 482 third record type
+# 483 third record end cylinder, head and sector
+# 486 third record logical block address
+# 490 third record size in logical block addresses
+# 494 fourth record boot indication
+# 495 fourth record start cylinder, head and sector
+# 498 fourth record type
+# 499 fourth record end cylinder, head and sector
+# 502 fourth record logical block address
+# 506 fourth record size in logical block addresses
+# 510 signature 43605
+# 512
+
+# GUIPT header byte layout
+# 0 signature 6075990659671082565
+# 8 version 65536
+# 12 header size
+# 16 header 32 bit cyclic redundancy check
+# 20 -
+# 24 this header logical block address
+# 32 alternate header logical block address
+# 40 first usable logical block address
+# 48 last usable logical block address
+# 56 disk globally unique identification
+# 72 partition array logical block address
+# 80 partition array size in partitions
+# 84 partition size in bytes
+# 88 partition array 32 bit cyclic redundancy check
+# 92
+
+# GUIPT partition byte layout
+# 0 type globally unique identification
+# 16 partition globally unique identification
+# 32 start logical block address
+# 40 end logical block address
+# 48 attributes
+# 56 name
+# 128
+
+# GUIPT partition attributes bit layout
+# 0 required partition
+# 1 no block input output protocol
+# 2 legacy BIOS bootable
+# 3 -
+# 64
+
+# The GUIPT, which stands for globally unique identification partition table, consists of a master boot record, a header and a partition array, ascending from the lowermost address. Additionally, an alternate header is located in the uppermost addresses.
+# Values in the GUIPT start with the least significant byte in the lowermost address, ending with the most significant byte in the uppermost address. Ignore cyclic redundancy checks and only validate needed variables individually.
+# The GUIPT partition type 285115978 identifies a file system.
+
+# header byte layout
+# 0 signature 1000000000000000000
+# 8 file list size in bytes
+# 16 file list
+
+# file byte layout
+# 0 address
+# 8 size
+# 16 tag 1
+# 272 tag 2
+# 528 tag 3
+# 784 tag 4
+# 1040 tag 5
+# 1296 tag 6
+# 1552 tag 7
+# 1808 tag 8
+# 2064 tag 9
+# 2320 tag 10
+# 2576 tag 11
+# 2832 tag 12
+# 3088 tag 13
+# 3344 tag 14
+# 3600 tag 15
+# 3856
+
+# Any file with the tags "riscv64" and "start" shall be initialized to run in an individual process. The tags are laie text encoded.
+
+align 4
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# out
+# 4 status
+label file_system_sifive_SPI_0_multi_media_card_GUIPT
+addi 2 2 -1056
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+
+addi 16 4 0
+addi 5 0 512
+addi 6 2 32
+call 1 sifive_SPI_0_multi_media_card_read_block
+bne 4 0 file_system_sifive_SPI_0_multi_media_card_GUIPT_failure
+ld 5 2 32
+lui 6 21586
+addi 6 6 1045
+slli 6 6 12
+addi 6 6 32
+slli 6 6 12
+addi 6 6 1172
+slli 6 6 12
+addi 6 6 1605
+bne 5 6 file_system_sifive_SPI_0_multi_media_card_GUIPT_failure
+lwu 7 2 40
+lui 8 16
+bne 7 8 file_system_sifive_SPI_0_multi_media_card_GUIPT_failure
+ld 17 2 104
+slli 17 17 9
+lwu 18 2 112
+beq 18 0 file_system_sifive_SPI_0_multi_media_card_GUIPT_failure
+
+label file_system_sifive_SPI_0_multi_media_card_GUIPT_loop
+addi 4 16 0
+andi 5 17 511
+sub 5 17 5
+addi 6 2 32
+call 1 sifive_SPI_0_multi_media_card_read_block
+andi 4 17 511
+addi 5 0 384
+bgeu 5 4 file_system_sifive_SPI_0_multi_media_card_GUIPT_move
+addi 4 16 0
+addi 5 17 512
+addi 6 2 544
+call 1 sifive_SPI_0_multi_media_card_read_block
+label file_system_sifive_SPI_0_multi_media_card_GUIPT_move
+andi 4 17 511
+add 4 4 2
+addi 4 4 32
+addi 5 2 32
+addi 6 0 128
+call 1 file_system_copy_bytes
+ld 4 2 32
+lui 5 69608
+addi 5 5 1610
+bne 4 5 file_system_sifive_SPI_0_multi_media_card_GUIPT_next
+ld 6 2 40
+bne 6 0 file_system_sifive_SPI_0_multi_media_card_GUIPT_next
+addi 4 16 0
+ld 5 2 64
+slli 5 5 9
+call 1 file_system_sifive_SPI_0_multi_media_card
+
+label file_system_sifive_SPI_0_multi_media_card_GUIPT_next
+addi 17 17 128
+addi 18 18 -1
+bne 18 0 file_system_sifive_SPI_0_multi_media_card_GUIPT_loop
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 1056
+jalr 0 1 0
+
+label file_system_sifive_SPI_0_multi_media_card_GUIPT_failure
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 1056
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# 5 file system address
+label file_system_sifive_SPI_0_multi_media_card
+addi 2 2 -2048
+addi 2 2 -2048
+addi 2 2 -576
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+sd 20 2 40
+sd 21 2 48
+sd 22 2 56
+
+# Some multi media cards require blocks to be naturally aligned, which may cause the file system to be missaligned in main memory. Always read blocks as naturally aligned 512 bytes and copy the target data to eight byte alignment.
+
+addi 16 4 0
+addi 17 5 0
+andi 5 5 511
+sub 5 17 5
+addi 6 2 64
+call 1 sifive_SPI_0_multi_media_card_read_block
+bne 4 0 file_system_sifive_SPI_0_multi_media_card_return
+andi 5 17 511
+addi 6 0 496
+bgeu 6 5 file_system_sifive_SPI_0_multi_media_card_signature
+addi 4 16 0
+addi 6 2 576
+sub 5 17 5
+addi 5 5 512
+call 1 sifive_SPI_0_multi_media_card_read_block
+bne 4 0 file_system_sifive_SPI_0_multi_media_card_return
+label file_system_sifive_SPI_0_multi_media_card_signature
+andi 4 17 511
+addi 4 4 64
+add 4 4 2
+addi 5 2 64
+addi 6 0 16
+call 1 file_system_copy_bytes
+ld 4 2 64
+lui 5 454747
+addi 5 5 1437
+slli 5 5 12
+addi 5 5 946
+slli 5 5 17
+bne 4 5 file_system_sifive_SPI_0_multi_media_card_return
+ld 18 2 72
+lui 6 1
+addi 6 6 -240
+bltu 18 6 file_system_sifive_SPI_0_multi_media_card_return
+addi 17 17 16
+
+label file_system_sifive_SPI_0_multi_media_card_loop
+addi 4 16 0
+andi 7 17 511
+sub 5 17 7
+addi 6 2 64
+addi 7 7 2047
+addi 7 7 1809
+addi 7 7 511
+andi 8 7 511
+sub 7 7 8
+call 1 sifive_SPI_0_multi_media_card_read_blocks
+bne 4 0 file_system_sifive_SPI_0_multi_media_card_return
+andi 4 17 511
+addi 4 4 64
+add 4 4 2
+addi 5 2 64
+lui 6 1
+addi 6 6 -240
+call 1 file_system_copy_bytes
+ld 19 2 64
+beq 19 0 file_system_sifive_SPI_0_multi_media_card_next
+ld 20 2 72
+beq 20 0 file_system_sifive_SPI_0_multi_media_card_next
+addi 4 2 64
+ll 5 file_system_tag_riscv64
+call 1 file_system_compare_tags
+bne 4 0 file_system_sifive_SPI_0_multi_media_card_next
+addi 4 2 64
+ll 5 file_system_tag_start
+call 1 file_system_compare_tags
+bne 4 0 file_system_sifive_SPI_0_multi_media_card_next
+
+# initialize a process to read the program to
+call 1 process_allocate
+beq 4 0 file_system_sifive_SPI_0_multi_media_card_return
+addi 21 4 0
+addi 4 20 0
+call 1 memory_allocate
+beq 4 0 file_system_sifive_SPI_0_multi_media_card_undo_process
+sd 4 21 24
+sd 5 21 32
+sd 0 21 40
+sd 0 21 48
+sd 0 21 56
+sd 4 21 64
+
+# read the content of the file
+addi 22 4 0
+label file_system_sifive_SPI_0_multi_media_card_read_content
+addi 4 16 0
+andi 5 19 511
+sub 5 19 5
+addi 6 2 64
+call 1 sifive_SPI_0_multi_media_card_read_block
+bne 4 0 file_system_sifive_SPI_0_multi_media_card_undo_memory
+andi 4 19 511
+addi 6 0 512
+sub 6 6 4
+addi 4 4 64
+add 4 4 2
+addi 5 22 0
+bgeu 20 6 file_system_sifive_SPI_0_multi_media_card_copy_content
+addi 6 20 0
+label file_system_sifive_SPI_0_multi_media_card_copy_content
+call 1 file_system_copy_bytes
+
+addi 4 21 0
+call 1 process_schedule
+addi 4 21 832
+call 1 tag_clear
+addi 4 0 512
+andi 5 19 511
+sub 4 4 5
+bgeu 4 20 file_system_sifive_SPI_0_multi_media_card_next
+add 19 19 4
+sub 20 20 4
+add 22 22 4
+jal 0 file_system_sifive_SPI_0_multi_media_card_read_content
+
+label file_system_sifive_SPI_0_multi_media_card_next
+lui 4 1
+addi 4 4 -240
+add 17 17 4
+sub 18 18 4
+bgeu 18 4 file_system_sifive_SPI_0_multi_media_card_loop
+
+label file_system_sifive_SPI_0_multi_media_card_return
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+ld 21 2 48
+ld 22 2 56
+addi 2 2 2047
+addi 2 2 2047
+addi 2 2 578
+jalr 0 1 0
+
+label file_system_sifive_SPI_0_multi_media_card_undo_memory
+ld 4 21 24
+ld 5 21 32
+call 1 memory_free
+label file_system_sifive_SPI_0_multi_media_card_undo_process
+sb 0 21 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+ld 21 2 48
+ld 22 2 56
+addi 2 2 2047
+addi 2 2 2047
+addi 2 2 578
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP032 address
+# out
+# 4 status
+label file_system_sifive_SPI_0_ISSI_IS25WP032_GUIPT
+addi 2 2 -160
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+
+addi 16 4 0
+addi 5 0 512
+addi 6 0 92
+addi 7 2 32
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+ld 4 2 32
+lui 5 21586
+addi 5 5 1045
+slli 5 5 12
+addi 5 5 32
+slli 5 5 12
+addi 5 5 1172
+slli 5 5 12
+addi 5 5 1605
+bne 4 5 file_system_sifive_SPI_0_ISSI_IS25WP032_GUIPT_failure
+lwu 6 2 40
+lui 7 16
+bne 6 7 file_system_sifive_SPI_0_ISSI_IS25WP032_GUIPT_failure
+ld 17 2 104
+slli 17 17 9
+lwu 18 2 112
+beq 18 0 file_system_sifive_SPI_0_ISSI_IS25WP032_GUIPT_failure
+
+label file_system_sifive_SPI_0_ISSI_IS25WP032_GUIPT_loop
+addi 4 16 0
+addi 5 17 0
+addi 6 0 128
+addi 7 2 32
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+ld 4 2 32
+lui 5 69608
+addi 5 5 1610
+bne 4 5 file_system_sifive_SPI_0_ISSI_IS25WP032_GUIPT_next
+ld 5 2 40
+bne 5 0 file_system_sifive_SPI_0_ISSI_IS25WP032_GUIPT_next
+addi 4 16 0
+ld 5 2 64
+slli 5 5 9
+call 1 file_system_sifive_SPI_0_ISSI_IS25WP032
+
+label file_system_sifive_SPI_0_ISSI_IS25WP032_GUIPT_next
+addi 17 17 128
+addi 18 18 -1
+bne 18 0 file_system_sifive_SPI_0_ISSI_IS25WP032_GUIPT_loop
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 160
+jalr 0 1 0
+
+label file_system_sifive_SPI_0_ISSI_IS25WP032_GUIPT_failure
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 160
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP032 address
+# 5 file system address
+label file_system_sifive_SPI_0_ISSI_IS25WP032
+addi 2 2 -2048
+addi 2 2 -1848
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+
+# read the header
+addi 16 4 0
+addi 17 5 0
+addi 6 0 16
+addi 7 2 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+ld 4 2 40
+lui 5 454747
+addi 5 5 1437
+slli 5 5 12
+addi 5 5 946
+slli 5 5 17
+bne 4 5 file_system_sifive_SPI_0_ISSI_IS25WP032_return
+ld 18 2 48
+lui 6 1
+addi 6 6 -240
+bltu 18 6 file_system_sifive_SPI_0_ISSI_IS25WP032_return
+addi 17 17 16
+
+label file_system_sifive_SPI_0_ISSI_IS25WP032_loop
+addi 4 16 0
+addi 5 17 0
+lui 6 1
+addi 6 6 -240
+addi 7 2 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+ld 4 2 40
+beq 4 0 file_system_sifive_SPI_0_ISSI_IS25WP032_next
+ld 5 2 48
+beq 5 0 file_system_sifive_SPI_0_ISSI_IS25WP032_next
+addi 4 2 40
+ll 5 file_system_tag_riscv64
+call 1 file_system_compare_tags
+bne 4 0 file_system_sifive_SPI_0_ISSI_IS25WP032_next
+addi 4 2 40
+ll 5 file_system_tag_start
+call 1 file_system_compare_tags
+bne 4 0 file_system_sifive_SPI_0_ISSI_IS25WP032_next
+
+# initialize a process to read the program to
+call 1 process_allocate
+beq 4 0 file_system_sifive_SPI_0_ISSI_IS25WP032_return
+addi 19 4 0
+ld 4 2 48
+call 1 memory_allocate
+beq 4 0 file_system_sifive_SPI_0_ISSI_IS25WP032_undo
+sd 4 19 24
+sd 5 19 32
+sd 0 19 40
+sd 0 19 48
+sd 0 19 56
+sd 4 19 64
+addi 7 4 0
+addi 4 16 0
+ld 5 2 40
+ld 6 2 48
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+addi 4 19 0
+call 1 process_schedule
+addi 4 19 832
+call 1 tag_clear
+
+label file_system_sifive_SPI_0_ISSI_IS25WP032_next
+lui 4 1
+addi 4 4 -240
+add 17 17 4
+sub 18 18 4
+bgeu 18 4 file_system_sifive_SPI_0_ISSI_IS25WP032_loop
+
+label file_system_sifive_SPI_0_ISSI_IS25WP032_return
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 2047
+addi 2 2 1849
+jalr 0 1 0
+
+label file_system_sifive_SPI_0_ISSI_IS25WP032_undo
+sb 0 19 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 2047
+addi 2 2 1849
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP256 address
+# out
+# 4 status
+label file_system_sifive_SPI_0_ISSI_IS25WP256_GUIPT
+addi 2 2 -160
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+
+addi 16 4 0
+addi 5 0 512
+addi 6 0 92
+addi 7 2 32
+call 1 sifive_SPI_0_ISSI_IS25WP256_read
+ld 4 2 32
+lui 5 21586
+addi 5 5 1045
+slli 5 5 12
+addi 5 5 32
+slli 5 5 12
+addi 5 5 1172
+slli 5 5 12
+addi 5 5 1605
+bne 4 5 file_system_sifive_SPI_0_ISSI_IS25WP256_GUIPT_failure
+lwu 6 2 40
+lui 7 16
+bne 6 7 file_system_sifive_SPI_0_ISSI_IS25WP256_GUIPT_failure
+ld 17 2 104
+slli 17 17 9
+lwu 18 2 112
+beq 18 0 file_system_sifive_SPI_0_ISSI_IS25WP256_GUIPT_failure
+
+label file_system_sifive_SPI_0_ISSI_IS25WP256_GUIPT_loop
+addi 4 16 0
+addi 5 17 0
+addi 6 0 128
+addi 7 2 32
+call 1 sifive_SPI_0_ISSI_IS25WP256_read
+ld 4 2 32
+lui 5 69608
+addi 5 5 1610
+bne 4 5 file_system_sifive_SPI_0_ISSI_IS25WP256_GUIPT_next
+ld 6 2 40
+bne 6 0 file_system_sifive_SPI_0_ISSI_IS25WP256_GUIPT_next
+addi 4 16 0
+ld 5 2 64
+slli 5 5 9
+call 1 file_system_sifive_SPI_0_ISSI_IS25WP256
+
+label file_system_sifive_SPI_0_ISSI_IS25WP256_GUIPT_next
+addi 17 17 128
+addi 18 18 -1
+bne 18 0 file_system_sifive_SPI_0_ISSI_IS25WP256_GUIPT_loop
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 160
+jalr 0 1 0
+
+label file_system_sifive_SPI_0_ISSI_IS25WP256_GUIPT_failure
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 160
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 ISSI IS25WP256 address
+# 5 file system address
+label file_system_sifive_SPI_0_ISSI_IS25WP256
+addi 2 2 -2048
+addi 2 2 -1848
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+
+# read the header
+addi 16 4 0
+addi 17 5 0
+addi 6 0 16
+addi 7 2 40
+call 1 sifive_SPI_0_ISSI_IS25WP256_read
+ld 4 2 40
+lui 5 454747
+addi 5 5 1437
+slli 5 5 12
+addi 5 5 946
+slli 5 5 17
+bne 4 5 file_system_sifive_SPI_0_ISSI_IS25WP256_return
+ld 18 2 48
+lui 6 1
+addi 6 6 -240
+bltu 18 6 file_system_sifive_SPI_0_ISSI_IS25WP256_return
+addi 17 17 16
+
+label file_system_sifive_SPI_0_ISSI_IS25WP256_loop
+addi 4 16 0
+addi 5 17 0
+lui 6 1
+addi 6 6 -240
+addi 7 2 40
+call 1 sifive_SPI_0_ISSI_IS25WP256_read
+ld 4 2 40
+beq 4 0 file_system_sifive_SPI_0_ISSI_IS25WP256_next
+ld 5 2 48
+beq 5 0 file_system_sifive_SPI_0_ISSI_IS25WP256_next
+addi 4 2 40
+ll 5 file_system_tag_riscv64
+call 1 file_system_compare_tags
+bne 4 0 file_system_sifive_SPI_0_ISSI_IS25WP256_next
+addi 4 2 40
+ll 5 file_system_tag_start
+call 1 file_system_compare_tags
+bne 4 0 file_system_sifive_SPI_0_ISSI_IS25WP256_next
+
+# initialize a process to read the program to
+call 1 process_allocate
+beq 4 0 file_system_sifive_SPI_0_ISSI_IS25WP256_return
+addi 19 4 0
+ld 4 2 48
+call 1 memory_allocate
+beq 4 0 file_system_sifive_SPI_0_ISSI_IS25WP256_undo
+sd 4 19 24
+sd 5 19 32
+sd 0 19 40
+sd 0 19 48
+sd 0 19 56
+sd 4 19 64
+addi 7 4 0
+addi 4 16 0
+ld 5 2 40
+ld 6 2 48
+call 1 sifive_SPI_0_ISSI_IS25WP256_read
+addi 4 19 0
+call 1 process_schedule
+addi 4 19 832
+call 1 tag_clear
+
+label file_system_sifive_SPI_0_ISSI_IS25WP256_next
+lui 4 1
+addi 4 4 -240
+add 17 17 4
+sub 18 18 4
+bgeu 18 4 file_system_sifive_SPI_0_ISSI_IS25WP256_loop
+
+label file_system_sifive_SPI_0_ISSI_IS25WP256_return
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 2047
+addi 2 2 1849
+jalr 0 1 0
+
+label file_system_sifive_SPI_0_ISSI_IS25WP256_undo
+sb 0 19 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 2047
+addi 2 2 1849
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 micron M25P80 address
+# out
+# 4 status
+label file_system_sifive_SPI_0_micron_M25P80_GUIPT
+addi 2 2 -160
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+
+addi 16 4 0
+addi 5 0 512
+addi 6 2 32
+addi 7 0 92
+call 1 sifive_SPI_0_micron_M25P80_read
+ld 4 2 32
+lui 5 21586
+addi 5 5 1045
+slli 5 5 12
+addi 5 5 32
+slli 5 5 12
+addi 5 5 1172
+slli 5 5 12
+addi 5 5 1605
+bne 4 5 file_system_sifive_SPI_0_micron_M25P80_GUIPT_failure
+lwu 6 2 40
+lui 7 16
+bne 6 7 file_system_sifive_SPI_0_micron_M25P80_GUIPT_failure
+ld 17 2 104
+slli 17 17 9
+lwu 18 2 112
+beq 18 0 file_system_sifive_SPI_0_micron_M25P80_GUIPT_failure
+
+label file_system_sifive_SPI_0_micron_M25P80_GUIPT_loop
+addi 4 16 0
+addi 5 17 0
+addi 6 2 32
+addi 7 0 128
+call 1 sifive_SPI_0_micron_M25P80_read
+ld 4 2 32
+lui 5 69608
+addi 5 5 1610
+bne 4 5 file_system_sifive_SPI_0_micron_M25P80_GUIPT_next
+ld 6 2 40
+bne 6 0 file_system_sifive_SPI_0_micron_M25P80_GUIPT_next
+addi 4 16 0
+ld 5 2 64
+slli 5 5 9
+call 1 file_system_sifive_SPI_0_micron_M25P80
+
+label file_system_sifive_SPI_0_micron_M25P80_GUIPT_next
+addi 17 17 128
+addi 18 18 -1
+bne 18 0 file_system_sifive_SPI_0_micron_M25P80_GUIPT_loop
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 160
+jalr 0 1 0
+
+label file_system_sifive_SPI_0_micron_M25P80_GUIPT_failure
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 160
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 micron M25P80 address
+# 5 file system address
+label file_system_sifive_SPI_0_micron_M25P80
+addi 2 2 -2048
+addi 2 2 -1848
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+
+# read the header
+addi 16 4 0
+addi 17 5 0
+addi 6 2 40
+addi 7 0 16
+call 1 sifive_SPI_0_micron_M25P80_read
+ld 4 2 40
+lui 5 454747
+addi 5 5 1437
+slli 5 5 12
+addi 5 5 946
+slli 5 5 17
+bne 4 5 file_system_sifive_SPI_0_micron_M25P80_return
+ld 18 2 48
+lui 6 1
+addi 6 6 -240
+bltu 18 6 file_system_sifive_SPI_0_micron_M25P80_return
+addi 17 17 16
+
+label file_system_sifive_SPI_0_micron_M25P80_loop
+addi 4 16 0
+addi 5 17 0
+addi 6 2 40
+lui 7 1
+addi 7 7 -240
+call 1 sifive_SPI_0_micron_M25P80_read
+ld 4 2 40
+beq 4 0 file_system_sifive_SPI_0_micron_M25P80_next
+ld 5 2 48
+beq 5 0 file_system_sifive_SPI_0_micron_M25P80_next
+addi 4 2 40
+ll 5 file_system_tag_riscv64
+call 1 file_system_compare_tags
+bne 4 0 file_system_sifive_SPI_0_micron_M25P80_next
+addi 4 2 40
+ll 5 file_system_tag_start
+call 1 file_system_compare_tags
+bne 4 0 file_system_sifive_SPI_0_micron_M25P80_next
+
+# initialize a process to read the program to
+call 1 process_allocate
+beq 4 0 file_system_sifive_SPI_0_micron_M25P80_return
+addi 19 4 0
+ld 4 2 48
+call 1 memory_allocate
+beq 4 0 file_system_sifive_SPI_0_micron_M25P80_undo
+sd 4 19 24
+sd 5 19 32
+sd 0 19 40
+sd 0 19 48
+sd 0 19 56
+sd 4 19 64
+addi 6 4 0
+addi 4 16 0
+ld 5 2 40
+ld 7 2 48
+call 1 sifive_SPI_0_micron_M25P80_read
+addi 4 19 0
+call 1 process_schedule
+addi 4 19 832
+call 1 tag_clear
+
+label file_system_sifive_SPI_0_micron_M25P80_next
+lui 4 1
+addi 4 4 -240
+add 17 17 4
+sub 18 18 4
+bgeu 18 4 file_system_sifive_SPI_0_micron_M25P80_loop
+
+label file_system_sifive_SPI_0_micron_M25P80_return
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 2047
+addi 2 2 1849
+jalr 0 1 0
+
+label file_system_sifive_SPI_0_micron_M25P80_undo
+sb 0 19 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 2047
+addi 2 2 1849
+jalr 0 1 0
+
+
+# in
+# 4 source address
+# 5 destination address
+# 6 size
+label file_system_copy_bytes
+lbu 7 4 0
+sb 7 5 0
+addi 4 4 1
+addi 5 5 1
+addi 6 6 -1
+bne 6 0 file_system_copy_bytes
+jalr 0 1 0
+
+
+# in
+# 4 file address
+# 5 tags address
+# out
+# 4 status
+label file_system_compare_tags
+addi 2 2 -24
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+addi 16 4 1808
+addi 17 5 0
+addi 4 4 16
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 -1536
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 -1280
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 -1024
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 -768
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 -512
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 -256
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 0
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 256
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 512
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 768
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 1024
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 1280
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 1536
+addi 5 17 0
+call 1 tag_compare
+beq 4 0 file_system_compare_tags_return
+addi 4 16 1792
+addi 5 17 0
+call 1 tag_compare
+label file_system_compare_tags_return
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+addi 2 2 24
+jalr 0 1 0
+
+
+align 8
+
+label file_system_tag_riscv64
+string "riscv64"
+zero 228
+
+label file_system_tag_start
+string "start"
+zero 236

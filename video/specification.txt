@@ -1,0 +1,24 @@
+Video provides sixteen buffers for programs to fill with video data. Any amount of buffers can be combined and written to any amount of video devices. Alternatively, programs may receive individual buffers from video, or a combination of buffers as they would be written to video devices.
+
+Each buffer can contain up to 8388608 pixels, which are made up of two bytes red, two bytes green, two bytes blue and two bytes opacity. The width and height of the contained video data are only limited by the buffer size.
+
+Programs may communicate with video through messages. The process name of video is the laie encoded text "video". As part of some functions, video sends a message back to the sender process. Video attempts to answer only once, to allow more messages to be received immediately. Therefore, the sender process shall clear its message before communicating with video, if an answer is expected.
+
+0 neutral
+
+1 check device existence
+
+2 read device size
+
+3 allocate buffer
+
+4 free buffer
+
+5 read buffer
+
+6 write buffer
+
+7 move buffer
+horizontal offset is a doubleword at offset 8
+vertical offset is a doubleword at offset 16
+or absolute horizontal position and vertical position? would only need unsigned values

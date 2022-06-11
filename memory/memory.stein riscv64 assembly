@@ -1,0 +1,1664 @@
+# integer register usage
+# 0 zero
+# 1 return address
+# 2 stack pointer
+# 3 message address
+# 4 temporary
+# 5 temporary
+# 6 temporary
+# 7 temporary
+# 8 temporary
+# 9 temporary
+# 10 temporary
+# 11 temporary
+# 12 temporary
+# 13 temporary
+# 14 temporary
+# 15 temporary
+# 16 saved
+# 17 saved
+# 18 saved
+# 19 saved
+# 20 saved
+# 21 saved
+# 22 saved
+# 23 saved
+# 24 saved
+# 25 saved
+# 26 saved
+# 27 saved
+# 28 saved
+# 29 saved
+# 30 saved
+# 31 saved
+
+# message byte layout
+# 0 status
+# 8 sender name
+# 264 data
+# 520
+
+
+label start
+
+# register the program name
+addi 8 0 6
+ll 9 memory_tag
+ecall
+beq 8 0 computer_description_size
+addi 8 0 4
+ecall
+
+label computer_description_size
+addi 8 0 11
+ecall
+bne 8 0 allocate_computer_description
+addi 8 0 4
+ecall
+
+label allocate_computer_description
+sub 9 end start
+add 9 9 8
+addi 9 9 7
+andi 10 9 7
+sub 9 9 10
+addi 8 0 5
+ecall
+beq 8 0 copy_computer_description
+addi 8 0 4
+ecall
+
+label copy_computer_description
+addi 8 0 12
+ll 9 end
+addi 16 9 0
+ecall
+
+label analyze_device_tree_17
+ll 2 stack
+addi 4 16 0
+call 1 device_tree_17_identify
+bne 4 0 free_computer_description
+addi 4 16 0
+call 1 device_tree_17_sifive_SPI_0_ISSI_IS25WP032
+addi 4 16 0
+call 1 device_tree_17_sifive_SPI_0_ISSI_IS25WP256
+addi 4 16 0
+call 1 device_tree_17_sifive_SPI_0_JEDEC_SPI-NOR
+addi 4 16 0
+call 1 device_tree_17_sifive_SPI_0_multi_media_card
+addi 4 16 0
+call 1 device_tree_17_sifive_SPI_0_micron_M25P80
+
+label free_computer_description
+addi 17 2 0
+addi 8 0 5
+sub 9 end start
+ecall
+ll 2 stack
+ll 3 message
+sub 4 2 17
+call 1 client_increment_device_addresses
+
+
+label register_message
+addi 8 0 9
+addi 9 3 0
+ecall
+
+label await_message
+addi 8 0 3
+ecall
+ld 4 3 0
+beq 4 0 await_message
+
+
+# check device existence
+ld 5 3 264
+addi 6 0 1
+bne 5 6 read_device_size
+ld 4 3 272
+call 1 device_index_to_address
+beq 4 0 check_device_existence_failure
+lbu 5 4 0
+beq 5 0 check_device_existence_failure
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label check_device_existence_failure
+addi 4 2 0
+call 1 tag_clear
+addi 4 0 1
+sb 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+
+label read_device_size
+addi 6 0 2
+bne 5 6 allocate
+ld 4 3 272
+call 1 device_index_to_address
+beq 4 0 read_device_size_failure
+lbu 5 4 0
+beq 5 0 read_device_size_failure
+
+# sifive SPI 0 ISSI IS25WP032
+ld 5 4 8
+addi 6 0 1
+bne 5 6 read_device_size_sifive_SPI_0_ISSI_IS25WP064
+addi 4 2 0
+call 1 tag_clear
+lui 4 1024
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_device_size_sifive_SPI_0_ISSI_IS25WP064
+addi 6 0 2
+bne 5 6 read_device_size_sifive_SPI_0_ISSI_IS25WP128
+addi 4 2 0
+call 1 tag_clear
+lui 4 2048
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_device_size_sifive_SPI_0_ISSI_IS25WP128
+addi 6 0 3
+bne 5 6 read_device_size_sifive_SPI_0_ISSI_IS25LP032
+addi 4 2 0
+call 1 tag_clear
+lui 4 4096
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_device_size_sifive_SPI_0_ISSI_IS25LP032
+addi 6 0 4
+bne 5 6 read_device_size_sifive_SPI_0_ISSI_IS25LP064
+addi 4 2 0
+call 1 tag_clear
+lui 4 1024
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_device_size_sifive_SPI_0_ISSI_IS25LP064
+addi 6 0 5
+bne 5 6 read_device_size_sifive_SPI_0_ISSI_IS25LP128
+addi 4 2 0
+call 1 tag_clear
+lui 4 2048
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_device_size_sifive_SPI_0_ISSI_IS25LP128
+addi 6 0 6
+bne 5 6 read_device_size_sifive_SPI_0_ISSI_IS25WP256
+addi 4 2 0
+call 1 tag_clear
+lui 4 4096
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_device_size_sifive_SPI_0_ISSI_IS25WP256
+addi 6 0 7
+bne 5 6 read_device_size_sifive_SPI_0_ISSI_IS25LP256
+addi 4 2 0
+call 1 tag_clear
+lui 4 8192
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_device_size_sifive_SPI_0_ISSI_IS25LP256
+addi 6 0 8
+bne 5 6 read_device_size_sifive_SPI_0_multi_media_card
+addi 4 2 0
+call 1 tag_clear
+lui 4 8192
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_device_size_sifive_SPI_0_multi_media_card
+addi 6 0 9
+bne 5 6 read_device_size_sifive_SPI_0_micron_M25P80
+addi 8 0 10
+ld 9 4 16
+ld 10 4 24
+ecall
+bne 8 0 read_device_size_failure
+addi 16 4 0
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_multi_media_card_initialize
+bne 4 0 read_device_size_failure
+ld 4 16 16
+call 1 sifive_SPI_0_multi_media_card_enable_CRC
+bne 4 0 read_device_size_failure
+addi 4 2 0
+call 1 tag_clear
+ld 4 16 16
+call 1 sifive_SPI_0_multi_media_card_size
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_device_size_sifive_SPI_0_micron_M25P80
+addi 6 0 10
+bne 5 6 read_device_size_failure
+addi 4 2 0
+call 1 tag_clear
+lui 4 256
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_device_size_failure
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+
+label allocate
+addi 6 0 3
+bne 5 6 free
+ld 4 3 272
+call 1 device_index_to_address
+beq 4 0 allocate_failure
+lbu 5 4 0
+beq 5 0 allocate_failure
+ld 5 3 280
+ld 6 3 288
+addi 16 4 0
+addi 17 5 0
+addi 18 6 0
+call 1 client_seek_overlapped
+bne 4 0 allocate_failure
+call 1 client_allocate
+beq 4 0 allocate_failure
+sd 16 4 8
+sd 17 4 16
+sd 18 4 24
+addi 5 4 32
+addi 4 3 8
+call 1 tag_copy
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label allocate_failure
+addi 4 2 0
+call 1 tag_clear
+lui 4 1
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+
+label free
+addi 6 0 4
+bne 5 6 read
+ld 4 3 272
+call 1 device_index_to_address
+beq 4 0 free_return
+ld 5 3 280
+addi 6 0 1
+call 1 client_seek_contained
+beq 4 0 free_return
+addi 18 4 0
+addi 4 4 32
+addi 5 3 8
+call 1 tag_compare
+bne 4 0 free_return
+sb 0 18 0
+label free_return
+fence rw rw
+sd 0 3 0
+jal 0 await_message
+
+
+label read
+addi 6 0 5
+bne 5 6 write
+ld 4 3 272
+call 1 device_index_to_address
+beq 4 0 read_failure
+ld 5 3 280
+addi 6 0 248
+addi 16 4 0
+addi 17 5 0
+call 1 client_seek_contained
+beq 4 0 read_failure
+addi 4 4 32
+addi 5 3 8
+call 1 tag_compare
+bne 4 0 read_failure
+
+# sifive SPI 0 ISSI IS25WP032
+ld 4 16 8
+addi 5 0 1
+bne 4 5 read_sifive_SPI_0_ISSI_IS25WP064
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 read_failure
+lui 4 1024
+addi 4 4 -248
+bltu 4 17 read_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 read_failure
+ld 4 16 16
+addi 5 17 0
+addi 6 0 248
+addi 7 2 8
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+sd 0 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_sifive_SPI_0_ISSI_IS25WP064
+addi 5 0 2
+bne 4 5 read_sifive_SPI_0_ISSI_IS25WP128
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 read_failure
+lui 4 2048
+addi 4 4 -248
+bltu 4 17 read_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 read_failure
+ld 4 16 16
+addi 5 17 0
+addi 6 0 248
+addi 7 2 8
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+sd 0 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_sifive_SPI_0_ISSI_IS25WP128
+addi 5 0 3
+bne 4 5 read_sifive_SPI_0_ISSI_IS25LP032
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 read_failure
+lui 4 4096
+addi 4 4 -248
+bltu 4 17 read_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 read_failure
+ld 4 16 16
+addi 5 17 0
+addi 6 0 248
+addi 7 2 8
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+sd 0 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_sifive_SPI_0_ISSI_IS25LP032
+addi 5 0 4
+bne 4 5 read_sifive_SPI_0_ISSI_IS25LP064
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 read_failure
+lui 4 1024
+addi 4 4 -248
+bltu 4 17 read_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 read_failure
+ld 4 16 16
+addi 5 17 0
+addi 6 0 248
+addi 7 2 8
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+sd 0 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_sifive_SPI_0_ISSI_IS25LP064
+addi 5 0 5
+bne 4 5 read_sifive_SPI_0_ISSI_IS25LP128
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 read_failure
+lui 4 2048
+addi 4 4 -248
+bltu 4 17 read_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 read_failure
+ld 4 16 16
+addi 5 17 0
+addi 6 0 248
+addi 7 2 8
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+sd 0 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_sifive_SPI_0_ISSI_IS25LP128
+addi 5 0 6
+bne 4 5 read_sifive_SPI_0_ISSI_IS25WP256
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 read_failure
+lui 4 4096
+addi 4 4 -248
+bltu 4 17 read_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 read_failure
+ld 4 16 16
+addi 5 17 0
+addi 6 0 248
+addi 7 2 8
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+sd 0 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_sifive_SPI_0_ISSI_IS25WP256
+addi 5 0 7
+bne 4 5 read_sifive_SPI_0_ISSI_IS25LP256
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 read_failure
+lui 4 8192
+addi 4 4 -248
+bltu 4 17 read_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP256_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP256_read_status_register
+andi 4 4 1
+bne 4 0 read_failure
+ld 4 16 16
+addi 5 17 0
+addi 6 0 248
+addi 7 2 8
+call 1 sifive_SPI_0_ISSI_IS25WP256_read
+sd 0 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_sifive_SPI_0_ISSI_IS25LP256
+addi 5 0 8
+bne 4 5 read_sifive_SPI_0_multi_media_card
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 read_failure
+lui 4 8192
+addi 4 4 -248
+bltu 4 17 read_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP256_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP256_read_status_register
+andi 4 4 1
+bne 4 0 read_failure
+ld 4 16 16
+addi 5 17 0
+addi 6 0 248
+addi 7 2 8
+call 1 sifive_SPI_0_ISSI_IS25WP256_read
+sd 0 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_sifive_SPI_0_multi_media_card
+addi 5 0 9
+bne 4 5 read_sifive_SPI_0_micron_M25P80
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 read_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_multi_media_card_initialize
+bne 4 0 read_failure
+ld 4 16 16
+call 1 sifive_SPI_0_multi_media_card_enable_CRC
+bne 4 0 read_failure
+ld 4 16 16
+call 1 sifive_SPI_0_multi_media_card_set_block_length_512
+bne 4 0 read_failure
+ld 4 16 16
+andi 5 17 511
+sub 5 17 5
+addi 6 2 8
+call 1 sifive_SPI_0_multi_media_card_read_block
+bne 4 0 read_failure
+andi 5 17 511
+addi 6 0 264
+bgeu 6 5 read_sifive_SPI_0_multi_media_card_align_doublewords
+ld 4 16 16
+sub 5 17 5
+addi 5 5 512
+addi 6 2 520
+call 1 sifive_SPI_0_multi_media_card_read_block
+bne 4 0 read_failure
+label read_sifive_SPI_0_multi_media_card_align_doublewords
+andi 4 17 511
+addi 4 4 8
+add 4 4 2
+addi 5 2 8
+addi 6 0 248
+call 1 copy_bytes
+sd 0 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_sifive_SPI_0_micron_M25P80
+addi 5 0 10
+bne 4 5 read_failure
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 read_failure
+lui 4 256
+addi 4 4 -248
+bltu 4 17 read_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_micron_M25P80_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_micron_M25P80_read_status_register
+andi 4 4 1
+bne 4 0 read_failure
+ld 4 16 16
+addi 5 17 0
+addi 6 2 8
+addi 7 0 248
+call 1 sifive_SPI_0_micron_M25P80_read
+sd 0 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label read_failure
+addi 4 2 0
+call 1 tag_clear
+lui 4 1
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+
+label write
+addi 6 0 6
+bne 5 6 discard_message
+ld 4 3 272
+call 1 device_index_to_address
+beq 4 0 write_failure
+ld 5 3 280
+addi 6 0 232
+addi 16 4 0
+addi 17 5 0
+call 1 client_seek_contained
+beq 4 0 write_failure
+addi 4 4 32
+addi 5 3 8
+call 1 tag_compare
+bne 4 0 write_failure
+
+# sifive SPI 0 ISSI IS25WP032
+ld 4 16 8
+addi 5 0 1
+bne 4 5 write_sifive_SPI_0_ISSI_IS25WP064
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 write_failure
+lui 4 1024
+addi 4 4 -232
+bltu 4 17 write_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 write_failure
+# read one or two sectors
+ld 4 16 16
+lui 5 1
+remu 6 17 5
+sub 5 17 6
+addi 6 6 231
+srli 6 6 12
+addi 6 6 1
+slli 6 6 12
+addi 7 2 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+# erase one or two sectors
+ld 4 16 16
+lui 5 1
+remu 5 17 5
+sub 5 17 5
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25WP032_copy
+sub 5 17 5
+add 5 5 4
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+label write_sifive_SPI_0_ISSI_IS25WP032_copy
+addi 4 3 288
+lui 5 1
+remu 5 17 5
+add 5 5 2
+addi 6 0 232
+call 1 copy_bytes
+# write one or two sectors
+ld 4 16 16
+addi 5 2 0
+lui 6 1
+remu 6 17 6
+sub 6 17 6
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25WP032_answer
+sub 6 17 5
+add 5 4 2
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+label write_sifive_SPI_0_ISSI_IS25WP032_answer
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label write_sifive_SPI_0_ISSI_IS25WP064
+addi 5 0 2
+bne 4 5 write_sifive_SPI_0_ISSI_IS25WP128
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 write_failure
+lui 4 2048
+addi 4 4 -232
+bltu 4 17 write_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 write_failure
+# read one or two sectors
+ld 4 16 16
+lui 5 1
+remu 6 17 5
+sub 5 17 6
+addi 6 6 231
+srli 6 6 12
+addi 6 6 1
+slli 6 6 12
+addi 7 2 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+# erase one or two sectors
+ld 4 16 16
+lui 5 1
+remu 5 17 5
+sub 5 17 5
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25WP064_copy
+sub 5 17 5
+add 5 5 4
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+label write_sifive_SPI_0_ISSI_IS25WP064_copy
+addi 4 3 288
+lui 5 1
+remu 5 17 5
+add 5 5 2
+addi 6 0 232
+call 1 copy_bytes
+# write one or two sectors
+ld 4 16 16
+addi 5 2 0
+lui 6 1
+remu 6 17 6
+sub 6 17 6
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25WP064_answer
+sub 6 17 5
+add 5 4 2
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+label write_sifive_SPI_0_ISSI_IS25WP064_answer
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label write_sifive_SPI_0_ISSI_IS25WP128
+addi 5 0 3
+bne 4 5 write_sifive_SPI_0_ISSI_IS25LP032
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 write_failure
+lui 4 4096
+addi 4 4 -232
+bltu 4 17 write_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 write_failure
+# read one or two sectors
+ld 4 16 16
+lui 5 1
+remu 6 17 5
+sub 5 17 6
+addi 6 6 231
+srli 6 6 12
+addi 6 6 1
+slli 6 6 12
+addi 7 2 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+# erase one or two sectors
+ld 4 16 16
+lui 5 1
+remu 5 17 5
+sub 5 17 5
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25WP128_copy
+sub 5 17 5
+add 5 5 4
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+label write_sifive_SPI_0_ISSI_IS25WP128_copy
+addi 4 3 288
+lui 5 1
+remu 5 17 5
+add 5 5 2
+addi 6 0 232
+call 1 copy_bytes
+# write one or two sectors
+ld 4 16 16
+addi 5 2 0
+lui 6 1
+remu 6 17 6
+sub 6 17 6
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25WP128_answer
+sub 6 17 5
+add 5 4 2
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+label write_sifive_SPI_0_ISSI_IS25WP128_answer
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label write_sifive_SPI_0_ISSI_IS25LP032
+addi 5 0 4
+bne 4 5 write_sifive_SPI_0_ISSI_IS25LP064
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 write_failure
+lui 4 1024
+addi 4 4 -232
+bltu 4 17 write_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 write_failure
+# read one or two sectors
+ld 4 16 16
+lui 5 1
+remu 6 17 5
+sub 5 17 6
+addi 6 6 231
+srli 6 6 12
+addi 6 6 1
+slli 6 6 12
+addi 7 2 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+# erase one or two sectors
+ld 4 16 16
+lui 5 1
+remu 5 17 5
+sub 5 17 5
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25LP032_copy
+sub 5 17 5
+add 5 5 4
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+label write_sifive_SPI_0_ISSI_IS25LP032_copy
+addi 4 3 288
+lui 5 1
+remu 5 17 5
+add 5 5 2
+addi 6 0 232
+call 1 copy_bytes
+# write one or two sectors
+ld 4 16 16
+addi 5 2 0
+lui 6 1
+remu 6 17 6
+sub 6 17 6
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25LP032_answer
+sub 6 17 5
+add 5 4 2
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+label write_sifive_SPI_0_ISSI_IS25LP032_answer
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label write_sifive_SPI_0_ISSI_IS25LP064
+addi 5 0 5
+bne 4 5 write_sifive_SPI_0_ISSI_IS25LP128
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 write_failure
+lui 4 2048
+addi 4 4 -232
+bltu 4 17 write_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 write_failure
+# read one or two sectors
+ld 4 16 16
+lui 5 1
+remu 6 17 5
+sub 5 17 6
+addi 6 6 231
+srli 6 6 12
+addi 6 6 1
+slli 6 6 12
+addi 7 2 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+# erase one or two sectors
+ld 4 16 16
+lui 5 1
+remu 5 17 5
+sub 5 17 5
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25LP064_copy
+sub 5 17 5
+add 5 5 4
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+label write_sifive_SPI_0_ISSI_IS25LP064_copy
+addi 4 3 288
+lui 5 1
+remu 5 17 5
+add 5 5 2
+addi 6 0 232
+call 1 copy_bytes
+# write one or two sectors
+ld 4 16 16
+addi 5 2 0
+lui 6 1
+remu 6 17 6
+sub 6 17 6
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25LP064_answer
+sub 6 17 5
+add 5 4 2
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+label write_sifive_SPI_0_ISSI_IS25LP064_answer
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label write_sifive_SPI_0_ISSI_IS25LP128
+addi 5 0 6
+bne 4 5 write_sifive_SPI_0_ISSI_IS25WP256
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 write_failure
+lui 4 4096
+addi 4 4 -232
+bltu 4 17 write_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP032_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_read_status_register
+andi 4 4 1
+bne 4 0 write_failure
+# read one or two sectors
+ld 4 16 16
+lui 5 1
+remu 6 17 5
+sub 5 17 6
+addi 6 6 231
+srli 6 6 12
+addi 6 6 1
+slli 6 6 12
+addi 7 2 0
+call 1 sifive_SPI_0_ISSI_IS25WP032_read
+# erase one or two sectors
+ld 4 16 16
+lui 5 1
+remu 5 17 5
+sub 5 17 5
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25LP128_copy
+sub 5 17 5
+add 5 5 4
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_erase_sector
+label write_sifive_SPI_0_ISSI_IS25LP128_copy
+addi 4 3 288
+lui 5 1
+remu 5 17 5
+add 5 5 2
+addi 6 0 232
+call 1 copy_bytes
+# write one or two sectors
+ld 4 16 16
+addi 5 2 0
+lui 6 1
+remu 6 17 6
+sub 6 17 6
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25LP128_answer
+sub 6 17 5
+add 5 4 2
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP032_program_sector
+label write_sifive_SPI_0_ISSI_IS25LP128_answer
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label write_sifive_SPI_0_ISSI_IS25WP256
+addi 5 0 7
+bne 4 5 write_sifive_SPI_0_ISSI_IS25LP256
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 write_failure
+lui 4 8192
+addi 4 4 -232
+bltu 4 17 write_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP256_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP256_read_status_register
+andi 4 4 1
+bne 4 0 write_failure
+# read one or two sectors
+ld 4 16 16
+lui 5 1
+remu 6 17 5
+sub 5 17 6
+addi 6 6 231
+srli 6 6 12
+addi 6 6 1
+slli 6 6 12
+addi 7 2 0
+call 1 sifive_SPI_0_ISSI_IS25WP256_read
+# erase one or two sectors
+ld 4 16 16
+lui 5 1
+remu 5 17 5
+sub 5 17 5
+call 1 sifive_SPI_0_ISSI_IS25WP256_erase_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25WP256_copy
+sub 5 17 5
+add 5 5 4
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP256_erase_sector
+label write_sifive_SPI_0_ISSI_IS25WP256_copy
+addi 4 3 288
+lui 5 1
+remu 5 17 5
+add 5 5 2
+addi 6 0 232
+call 1 copy_bytes
+# write one or two sectors
+ld 4 16 16
+addi 5 2 0
+lui 6 1
+remu 6 17 6
+sub 6 17 6
+call 1 sifive_SPI_0_ISSI_IS25WP256_program_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25WP256_answer
+sub 6 17 5
+add 5 4 2
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP256_program_sector
+label write_sifive_SPI_0_ISSI_IS25WP256_answer
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label write_sifive_SPI_0_ISSI_IS25LP256
+addi 5 0 8
+bne 4 5 write_sifive_SPI_0_multi_media_card
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 write_failure
+lui 4 8192
+addi 4 4 -232
+bltu 4 17 write_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_ISSI_IS25WP256_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP256_read_status_register
+andi 4 4 1
+bne 4 0 write_failure
+# read one or two sectors
+ld 4 16 16
+lui 5 1
+remu 6 17 5
+sub 5 17 6
+addi 6 6 231
+srli 6 6 12
+addi 6 6 1
+slli 6 6 12
+addi 7 2 0
+call 1 sifive_SPI_0_ISSI_IS25WP256_read
+# erase one or two sectors
+ld 4 16 16
+lui 5 1
+remu 5 17 5
+sub 5 17 5
+call 1 sifive_SPI_0_ISSI_IS25WP256_erase_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25LP256_copy
+sub 5 17 5
+add 5 5 4
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP256_erase_sector
+label write_sifive_SPI_0_ISSI_IS25LP256_copy
+addi 4 3 288
+lui 5 1
+remu 5 17 5
+add 5 5 2
+addi 6 0 232
+call 1 copy_bytes
+# write one or two sectors
+ld 4 16 16
+addi 5 2 0
+lui 6 1
+remu 6 17 6
+sub 6 17 6
+call 1 sifive_SPI_0_ISSI_IS25WP256_program_sector
+lui 4 1
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_ISSI_IS25LP256_answer
+sub 6 17 5
+add 5 4 2
+ld 4 16 16
+call 1 sifive_SPI_0_ISSI_IS25WP256_program_sector
+label write_sifive_SPI_0_ISSI_IS25LP256_answer
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label write_sifive_SPI_0_multi_media_card
+addi 5 0 9
+bne 4 5 write_sifive_SPI_0_micron_M25P80
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 write_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_multi_media_card_initialize
+bne 4 0 write_failure
+ld 4 16 16
+call 1 sifive_SPI_0_multi_media_card_enable_CRC
+bne 4 0 write_failure
+ld 4 16 16
+call 1 sifive_SPI_0_multi_media_card_set_block_length_512
+bne 4 0 write_failure
+# read one or two blocks
+ld 4 16 16
+andi 5 17 511
+sub 5 17 5
+addi 6 2 0
+call 1 sifive_SPI_0_multi_media_card_read_block
+bne 4 0 write_failure
+addi 4 0 280
+andi 5 17 511
+bgeu 4 5 write_sifive_SPI_0_multi_media_card_copy
+ld 4 16 16
+sub 5 17 5
+addi 5 5 512
+addi 6 2 512
+call 1 sifive_SPI_0_multi_media_card_read_block
+bne 4 0 write_failure
+label write_sifive_SPI_0_multi_media_card_copy
+addi 4 3 288
+andi 5 17 511
+add 5 5 2
+addi 6 0 232
+call 1 copy_bytes
+# write one or two blocks
+ld 4 16 16
+andi 5 17 511
+sub 5 17 5
+addi 6 2 0
+call 1 sifive_SPI_0_multi_media_card_write_block
+bne 4 0 write_failure
+addi 4 0 280
+andi 5 17 511
+bgeu 4 5 write_sifive_SPI_0_multi_media_card_answer
+ld 4 16 16
+sub 5 17 5
+addi 5 5 512
+addi 6 2 512
+call 1 sifive_SPI_0_multi_media_card_write_block
+bne 4 0 write_failure
+label write_sifive_SPI_0_multi_media_card_answer
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label write_sifive_SPI_0_micron_M25P80
+addi 5 0 10
+bne 4 5 write_failure
+addi 8 0 10
+ld 9 16 16
+ld 10 16 24
+ecall
+bne 8 0 write_failure
+lui 4 256
+addi 4 4 -232
+bltu 4 17 write_failure
+ld 4 16 16
+ld 5 16 32
+ld 6 16 40
+call 1 sifive_SPI_0_micron_M25P80_initialize
+ld 4 16 16
+call 1 sifive_SPI_0_micron_M25P80_read_status_register
+andi 4 4 1
+bne 4 0 write_failure
+# read one or two sectors
+ld 4 16 16
+lui 5 16
+remu 7 17 5
+sub 5 17 7
+addi 6 2 0
+addi 7 7 231
+srli 7 7 16
+addi 7 7 1
+slli 7 7 16
+call 1 sifive_SPI_0_micron_M25P80_read
+# erase one or two sectors
+ld 4 16 16
+lui 5 16
+remu 5 17 5
+sub 5 17 5
+call 1 sifive_SPI_0_micron_M25P80_erase_sector
+lui 4 16
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_micron_M25P80_copy
+sub 5 19 5
+add 5 5 4
+ld 4 16 16
+call 1 sifive_SPI_0_micron_M25P80_erase_sector
+label write_sifive_SPI_0_micron_M25P80_copy
+addi 4 3 288
+lui 5 16
+remu 5 17 5
+add 5 5 2
+addi 6 0 232
+call 1 copy_bytes
+# write one or two sectors
+ld 4 16 16
+addi 5 2 0
+lui 6 16
+remu 6 17 6
+sub 6 17 6
+call 1 sifive_SPI_0_micron_M25P80_program_sector
+lui 4 16
+remu 5 17 4
+addi 6 5 232
+bgeu 4 6 write_sifive_SPI_0_micron_M25P80_answer
+sub 6 17 5
+add 6 6 4
+add 5 2 4
+ld 4 16 16
+call 1 sifive_SPI_0_micron_M25P80_program_sector
+label write_sifive_SPI_0_micron_M25P80_answer
+addi 4 2 0
+call 1 tag_clear
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+label write_failure
+addi 4 2 0
+call 1 tag_clear
+lui 4 1
+sd 4 2 0
+addi 8 0 8
+addi 9 3 8
+addi 10 2 0
+ecall
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+sd 0 3 0
+jal 0 await_message
+
+
+label discard_message
+fence rw rw
+sd 0 3 0
+jal 0 await_message
+
+
+# in
+# 4 source address
+# 5 destination address
+# 6 size
+label copy_bytes
+lbu 7 4 0
+sb 7 5 0
+addi 4 4 1
+addi 5 5 1
+addi 6 6 -1
+bne 6 0 copy_bytes
+jalr 0 1 0
+
+
+align 8
+
+label memory_tag
+string "memory"
+zero 232
+
+zero 1024
+label stack
+zero 131072
+
+label message
+zero 520

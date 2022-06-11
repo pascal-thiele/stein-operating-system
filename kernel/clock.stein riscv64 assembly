@@ -1,0 +1,82 @@
+align 4
+
+
+label clock_interrupt
+addi 2 2 -8
+sd 1 2 0
+
+ld 4 clock_type
+addi 5 0 1
+bne 4 5 clock_interrupt_return
+ld 4 clock_address
+ld 5 clock_quantum
+call 1 sifive_core_local_interruptor_0_set
+
+label clock_interrupt_return
+ld 1 2 0
+addi 2 2 8
+jalr 0 1 0
+
+
+label clock_wait
+addi 2 2 -8
+sd 1 2 0
+
+ld 4 clock_type
+addi 5 0 1
+bne 4 5 clock_wait_return
+ld 4 clock_address
+ld 5 clock_quantum
+call 1 sifive_core_local_interruptor_0_wait
+
+label clock_wait_return
+ld 1 2 0
+addi 2 2 8
+jalr 0 1 0
+
+
+# out
+# 4 time in deciseconds
+# 5 time in centiseconds
+# 6 time in milliseconds
+label clock_read
+ld 4 clock_type
+addi 5 0 1
+bne 4 5 clock_read_sifive_core_local_interruptor_0_return
+ld 7 clock_address
+lui 8 12
+add 7 7 8
+ld 7 7 -8
+ld 8 clock_quantum
+divu 4 7 8
+addi 5 4 0
+addi 6 4 0
+addi 9 0 10
+bltu 8 9 clock_read_sifive_core_local_interruptor_0_return
+divu 8 8 9
+divu 5 7 8
+addi 6 5 0
+bltu 8 9 clock_read_sifive_core_local_interruptor_0_return
+divu 8 8 9
+divu 6 7 8
+label clock_read_sifive_core_local_interruptor_0_return
+jalr 0 1 0
+
+
+align 8
+
+# clock types
+# 0 neutral
+# 1 sifive core local interruptor 0
+label clock_type
+doubleword 0
+
+label clock_address
+doubleword 0
+
+label clock_size
+doubleword 0
+
+# the quantum shall correspond to a tenth of a second, as close as possible
+label clock_quantum
+doubleword 0

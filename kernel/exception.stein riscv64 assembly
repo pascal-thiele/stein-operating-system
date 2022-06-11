@@ -1,0 +1,927 @@
+align 4
+
+
+label exception
+csrrw 3 3 mscratch
+sd 1 3 16
+sd 2 3 24
+# 3 last
+sd 4 3 40
+sd 5 3 48
+sd 6 3 56
+sd 7 3 64
+sd 8 3 72
+sd 9 3 80
+sd 10 3 88
+sd 11 3 96
+sd 12 3 104
+sd 13 3 112
+sd 14 3 120
+sd 15 3 128
+sd 16 3 136
+sd 17 3 144
+sd 18 3 152
+sd 19 3 160
+sd 20 3 168
+sd 21 3 176
+sd 22 3 184
+sd 23 3 192
+sd 24 3 200
+sd 25 3 208
+sd 26 3 216
+sd 27 3 224
+sd 28 3 232
+sd 29 3 240
+sd 30 3 248
+sd 31 3 256
+csrrw 4 3 mscratch
+sd 4 3 32
+ll 2 stack
+
+# synchronize threads
+ll 16 semaphore
+lui 4 1
+label exception_lock
+amoswapd 5 16 4
+bne 5 0 exception_lock
+
+# check break process execution flag
+lbu 4 3 0
+beq 4 0 exception_instruction_address_misaligned
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_break_process_execution_load_process
+label exception_break_process_execution_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_break_process_execution_lock
+amoswapd 5 16 4
+bne 5 0 exception_break_process_execution_lock
+call 1 process_pick
+beq 4 0 exception_break_process_execution_wait
+label exception_break_process_execution_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_instruction_address_misaligned
+csrrs 4 0 mcause
+bne 4 0 exception_instruction_access_fault
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_instruction_address_misaligned_load_process
+label exception_instruction_address_misaligned_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_instruction_address_misaligned_lock
+amoswapd 5 16 4
+bne 5 0 exception_instruction_address_misaligned_lock
+call 1 process_pick
+beq 4 0 exception_instruction_address_misaligned_wait
+label exception_instruction_address_misaligned_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_instruction_access_fault
+addi 5 0 1
+bne 4 5 exception_illegal_instruction
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_instruction_access_fault_load_process
+label exception_instruction_access_fault_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_instruction_access_fault_lock
+amoswapd 5 16 4
+bne 5 0 exception_instruction_access_fault_lock
+call 1 process_pick
+beq 4 0 exception_instruction_access_fault_wait
+label exception_instruction_access_fault_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_illegal_instruction
+addi 5 0 2
+bne 4 5 exception_breakpoint
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_illegal_instruction_load_process
+label exception_illegal_instruction_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_illegal_instruction_lock
+amoswapd 5 16 4
+bne 5 0 exception_illegal_instruction_lock
+call 1 process_pick
+beq 4 0 exception_illegal_instruction_wait
+label exception_illegal_instruction_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_breakpoint
+addi 5 0 3
+bne 4 5 exception_load_address_misaligned
+csrrs 6 0 mepc
+addi 6 6 4
+csrrw 0 6 mepc
+jal 0 exception_return
+
+
+label exception_load_address_misaligned
+addi 5 0 4
+bne 4 5 exception_load_access_fault
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_load_address_misaligned_load_process
+label exception_load_address_misaligned_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_load_address_misaligned_lock
+amoswapd 5 16 4
+bne 5 0 exception_load_address_misaligned_lock
+call 1 process_pick
+beq 4 0 exception_load_address_misaligned_wait
+label exception_load_address_misaligned_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_load_access_fault
+addi 5 0 5
+bne 4 5 exception_store_amo_address_misaligned
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_load_access_fault_load_process
+label exception_load_access_fault_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_load_access_fault_lock
+amoswapd 5 16 4
+bne 5 0 exception_load_access_fault_lock
+call 1 process_pick
+beq 4 0 exception_load_access_fault_wait
+label exception_load_access_fault_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_store_amo_address_misaligned
+addi 5 0 6
+bne 4 5 exception_store_amo_access_fault
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_store_amo_address_misaligned_load_process
+label exception_store_amo_address_misaligned_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_store_amo_address_misaligned_lock
+amoswapd 5 16 4
+bne 5 0 exception_store_amo_address_misaligned_lock
+call 1 process_pick
+beq 4 0 exception_store_amo_address_misaligned_wait
+label exception_store_amo_address_misaligned_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_store_amo_access_fault
+addi 5 0 7
+bne 4 5 exception_user_environment_call
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_store_amo_access_fault_load_process
+label exception_store_amo_access_fault_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_store_amo_access_fault_lock
+amoswapd 5 16 4
+bne 5 0 exception_store_amo_access_fault_lock
+call 1 process_pick
+beq 4 0 exception_store_amo_access_fault_wait
+label exception_store_amo_access_fault_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_user_environment_call
+addi 5 0 8
+bne 4 5 exception_instruction_page_fault
+csrrs 6 0 mepc
+addi 6 6 4
+csrrw 0 6 mepc
+
+
+# allocate process
+ld 4 3 72
+addi 5 0 1
+bne 4 5 exception_free_process
+# ensure the program is a aligned to eight bytes
+ld 17 3 80
+andi 4 17 7
+bne 4 0 exception_allocate_process_failure
+ld 18 3 88
+beq 18 0 exception_allocate_process_failure
+andi 4 18 7
+bne 4 0 exception_allocate_process_failure
+# ensure the program is in caller memory
+ld 4 3 8
+ld 5 4 24
+bltu 17 5 exception_allocate_process_failure
+sub 6 17 5
+add 6 6 18
+ld 7 4 32
+bltu 7 6 exception_allocate_process_failure
+# allocate the process resources
+call 1 process_allocate
+beq 4 0 exception_allocate_process_failure
+addi 19 4 0
+addi 4 18 0
+call 1 memory_allocate
+bne 4 0 exception_allocate_process_write_process
+sb 0 19 0
+label exception_allocate_process_failure
+lui 4 1
+sd 4 3 72
+jal 0 exception_return
+label exception_allocate_process_write_process
+sd 4 19 24
+sd 5 19 32
+sd 0 19 40
+sd 0 19 48
+sd 0 19 56
+sd 4 19 64
+addi 6 0 8
+label exception_allocate_process_copy_program_loop
+ld 7 17 0
+sd 7 4 0
+addi 4 4 8
+addi 17 17 8
+addi 18 18 -8
+bgeu 18 6 exception_allocate_process_copy_program_loop
+addi 4 19 832
+call 1 tag_clear
+addi 4 19 0
+call 1 process_schedule
+sd 0 3 72
+jal 0 exception_return
+
+
+label exception_free_process
+addi 5 0 2
+bne 4 5 exception_reschedule
+# ensure the name is in caller memory
+ld 17 3 80
+ld 4 3 8
+ld 5 4 24
+bltu 17 5 exception_free_process_return
+sub 5 17 5
+addi 5 5 256
+ld 6 4 32
+bltu 6 5 exception_free_process_return
+addi 4 17 0
+call 1 process_identify
+beq 4 0 exception_free_process_return
+
+# check if any thread is running this process
+ll 5 thread_list
+lbu 6 thread_list_size
+label exception_free_process_check_running
+ld 7 5 8
+beq 7 4 exception_free_process_break_execution
+addi 5 5 264
+addi 6 6 -1
+bne 6 0 exception_free_process_check_running
+addi 17 4 0
+call 1 process_cancel
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+label exception_free_process_return
+jal 0 exception_return
+
+label exception_free_process_break_execution
+addi 4 0 1
+sb 4 5 0
+jal 0 exception_return
+
+
+label exception_reschedule
+addi 5 0 3
+bne 4 5 exception_exit
+ld 17 3 8
+addi 4 17 0
+call 1 process_store
+addi 4 17 0
+call 1 process_schedule
+call 1 process_pick
+bne 4 0 exception_reschedule_load_process
+label exception_reschedule_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_reschedule_lock
+amoswapd 5 16 4
+bne 5 0 exception_reschedule_lock
+call 1 process_pick
+beq 4 0 exception_reschedule_wait
+label exception_reschedule_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_exit
+addi 5 0 4
+bne 4 5 exception_resize
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_exit_load_process
+label exception_exit_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_exit_lock
+amoswapd 5 16 4
+bne 5 0 exception_exit_lock
+call 1 process_pick
+beq 4 0 exception_exit_wait
+label exception_exit_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_resize
+addi 5 0 5
+bne 4 5 exception_rename
+ld 17 3 80
+andi 4 17 7
+bne 4 0 exception_resize_failure
+ld 18 3 8
+ld 19 18 24
+ld 20 18 32
+addi 4 19 0
+addi 5 20 0
+call 1 memory_free
+addi 4 17 0
+call 1 memory_allocate
+beq 4 0 exception_resize_undo
+sd 4 18 24
+sd 5 18 32
+
+# relocate the program counter
+csrrs 6 0 mepc
+bltu 4 19 exception_resize_decrement_program_counter
+sub 7 4 19
+add 6 6 7
+jal 0 exception_resize_write_program_counter
+label exception_resize_decrement_program_counter
+sub 7 19 4
+sub 6 6 7
+label exception_resize_write_program_counter
+csrrw 0 6 mepc
+
+# relocate the message address
+lui 6 0
+ld 7 18 56
+sub 8 7 19
+addi 8 8 520
+bltu 17 8 exception_resize_write_message_address
+bltu 4 19 exception_resize_decrement_message_address
+sub 6 4 19
+add 6 6 7
+jal 0 exception_resize_write_message_address
+label exception_resize_decrement_message_address
+sub 6 19 4
+sub 6 7 6
+label exception_resize_write_message_address
+sd 6 18 56
+
+# copy the process memory
+addi 6 0 8
+bgeu 20 5 exception_resize_copy_zero
+addi 5 20 0
+label exception_resize_copy_zero
+bltu 5 6 exception_resize_protect
+label exception_resize_copy_memory_loop
+ld 7 19 0
+sd 7 4 0
+addi 19 19 8
+addi 4 4 8
+addi 5 5 -8
+bgeu 5 6 exception_resize_copy_memory_loop
+
+label exception_resize_protect
+addi 4 18 0
+call 1 process_protect
+sd 0 3 72
+jal 0 exception_return
+
+label exception_resize_undo
+addi 4 19 0
+addi 5 20 0
+call 1 memory_banish
+label exception_resize_failure
+lui 4 1
+sd 4 3 72
+jal 0 exception_return
+
+
+label exception_rename
+addi 5 0 6
+bne 4 5 exception_check_process_existence
+ld 17 3 80
+andi 4 17 7
+bne 4 0 exception_rename_failure
+ld 18 3 8
+ld 4 18 24
+bltu 17 4 exception_rename_failure
+sub 4 17 4
+addi 4 4 256
+ld 5 18 32
+bltu 5 4 exception_rename_failure
+# ensure the name is not in use
+addi 4 17 0
+call 1 process_identify
+bne 4 0 exception_rename_failure
+addi 4 17 0
+addi 5 18 832
+call 1 tag_copy
+sd 0 3 72
+jal 0 exception_return
+label exception_rename_failure
+lui 4 1
+sd 4 3 72
+jal 0 exception_return
+
+
+label exception_check_process_existence
+addi 5 0 7
+bne 4 5 exception_send_message
+ld 4 3 80
+andi 5 4 7
+bne 5 0 exception_check_process_existence_failure
+ld 5 3 8
+ld 6 5 24
+bltu 4 6 exception_check_process_existence_failure
+sub 6 4 6
+addi 6 6 256
+ld 7 5 32
+bltu 7 6 exception_check_process_existence_failure
+call 1 process_identify
+beq 4 0 exception_check_process_existence_failure
+sd 0 3 72
+jal 0 exception_return
+label exception_check_process_existence_failure
+lui 4 1
+sd 4 3 72
+jal 0 exception_return
+
+
+label exception_send_message
+addi 5 0 8
+bne 4 5 exception_register_message
+ld 17 3 80
+andi 4 17 7
+bne 4 0 exception_send_message_failure
+ld 18 3 88
+andi 5 18 7
+bne 5 0 exception_send_message_failure
+ld 19 3 8
+ld 4 19 24
+bltu 17 4 exception_send_message_failure
+bltu 18 4 exception_send_message_failure
+ld 5 19 32
+sub 6 17 4
+bltu 5 6 exception_send_message_failure
+sub 7 18 4
+bltu 5 7 exception_send_message_failure
+addi 4 17 0
+call 1 process_identify
+beq 4 0 exception_send_message_failure
+ld 20 4 56
+beq 20 0 exception_send_message_failure
+ld 5 20 0
+bne 5 0 exception_send_message_failure
+
+# write the message
+addi 4 19 832
+addi 5 20 8
+call 1 tag_copy
+addi 4 18 0
+addi 5 20 264
+call 1 tag_copy
+
+# set message status to pending
+fence rw rw
+lui 4 1
+sd 4 20 0
+sd 0 3 72
+jal 0 exception_return
+label exception_send_message_failure
+lui 4 1
+sd 4 3 72
+jal 0 exception_return
+
+
+label exception_register_message
+addi 5 0 9
+bne 4 5 exception_allocate_device
+ld 4 3 8
+ld 5 3 80
+beq 5 0 exception_register_message_clear
+andi 6 5 7
+bne 6 0 exception_register_message_return
+ld 6 4 24
+bltu 5 6 exception_register_message_return
+sub 6 5 6
+addi 6 6 520
+ld 7 4 32
+bltu 7 6 exception_register_message_return
+sd 5 4 56
+label exception_register_message_return
+jal 0 exception_return
+label exception_register_message_clear
+sd 0 4 56
+jal 0 exception_return
+
+
+label exception_allocate_device
+addi 5 0 10
+bne 4 5 exception_computer_description_size
+ld 17 3 80
+beq 17 0 exception_allocate_device_clear
+ld 18 3 88
+beq 18 0 exception_allocate_device_clear
+andi 4 17 7
+bne 4 0 exception_allocate_device_failure
+andi 5 18 7
+bne 5 0 exception_allocate_device_failure
+
+# check for overlap with kernel
+ll 4 start
+bltu 4 17 exception_allocate_device_overlap_kernel_below
+sub 4 4 17
+bltu 4 18 exception_allocate_device_failure
+jal 0 exception_allocate_device_overlap_computer_description
+label exception_allocate_device_overlap_kernel_below
+sub 4 17 4
+lui 5 512
+bltu 4 5 exception_allocate_device_failure
+
+label exception_allocate_device_overlap_computer_description
+ld 4 computer_description_address
+bltu 4 17 exception_allocate_device_overlap_device_tree_17_below
+sub 4 4 17
+bltu 4 18 exception_allocate_device_failure
+jal 0 exception_allocate_device_overlap_clock
+label exception_allocate_device_overlap_device_tree_17_below
+sub 4 17 4
+ld 5 computer_description_size
+bltu 4 5 exception_allocate_device_failure
+
+label exception_allocate_device_overlap_clock
+ld 4 clock_address
+bltu 4 17 exception_allocate_device_overlap_clock_below
+sub 4 4 17
+bltu 4 18 exception_allocate_device_failure
+jal 0 exception_allocate_device_overlap_memory
+label exception_allocate_device_overlap_clock_below
+sub 4 17 4
+ld 5 clock_size
+bltu 4 5 exception_allocate_device_failure
+
+label exception_allocate_device_overlap_memory
+addi 4 17 0
+addi 5 18 0
+call 1 memory_overlap
+beq 4 0 exception_allocate_device_failure
+
+# check for overlap with process
+addi 4 17 0
+addi 5 18 0
+call 1 process_overlap
+beq 4 0 exception_allocate_device_failure
+
+# store the address range of the device
+ld 4 3 8
+sd 17 4 40
+sd 18 4 48
+call 1 process_protect
+sd 0 3 72
+jal 0 exception_return
+
+label exception_allocate_device_clear
+ld 4 3 8
+sd 0 4 40
+sd 0 4 48
+call 1 process_protect
+sd 0 3 72
+jal 0 exception_return
+
+label exception_allocate_device_failure
+lui 4 1
+sd 4 3 72
+jal 0 exception_return
+
+
+label exception_computer_description_size
+addi 5 0 11
+bne 4 5 exception_copy_computer_description
+lui 6 0
+ld 7 computer_description_address
+beq 7 0 exception_computer_description_size_return
+ld 6 computer_description_size
+label exception_computer_description_size_return
+sd 6 3 72
+jal 0 exception_return
+
+
+label exception_copy_computer_description
+addi 5 0 12
+bne 4 5 exception_read_clock
+ld 6 3 80
+andi 7 6 7
+bne 7 0 exception_copy_computer_description_return
+ld 7 3 8
+ld 8 7 24
+bltu 6 8 exception_copy_computer_description_return
+ld 9 computer_description_address
+beq 9 0 exception_copy_computer_description_return
+ld 10 computer_description_size
+beq 10 0 exception_copy_computer_description_return
+ld 11 7 32
+sub 12 6 8
+add 12 12 10
+bltu 11 12 exception_copy_computer_description_return
+label exception_copy_computer_description_loop
+lbu 12 9 0
+sb 12 6 0
+addi 9 9 1
+addi 6 6 1
+addi 10 10 -1
+bne 10 0 exception_copy_computer_description_loop
+label exception_copy_computer_description_return
+jal 0 exception_return
+
+
+label exception_read_clock
+addi 5 0 13
+bne 4 5 exception_read_clock_return
+call 1 clock_read
+sd 4 3 72
+sd 5 3 80
+sd 6 3 88
+label exception_read_clock_return
+jal 0 exception_return
+
+
+label exception_instruction_page_fault
+addi 5 0 12
+bne 4 5 exception_load_page_fault
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_instruction_page_fault_load_process
+label exception_instruction_page_fault_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_instruction_page_fault_lock
+amoswapd 5 16 4
+bne 5 0 exception_instruction_page_fault_lock
+call 1 process_pick
+beq 4 0 exception_instruction_page_fault_wait
+label exception_instruction_page_fault_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_load_page_fault
+addi 5 0 13
+bne 4 5 exception_store_amo_page_fault
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_load_page_fault_load_process
+label exception_load_page_fault_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_load_page_fault_lock
+amoswapd 5 16 4
+bne 5 0 exception_load_page_fault_lock
+call 1 process_pick
+beq 4 0 exception_load_page_fault_wait
+label exception_load_page_fault_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_store_amo_page_fault
+addi 5 0 15
+bne 4 5 exception_machine_timer
+ld 17 3 8
+ld 4 17 24
+ld 5 17 32
+call 1 memory_free
+sb 0 17 0
+call 1 process_pick
+bne 4 0 exception_store_amo_page_fault_load_process
+label exception_store_amo_page_fault_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_store_amo_page_fault_lock
+amoswapd 5 16 4
+bne 5 0 exception_store_amo_page_fault_lock
+call 1 process_pick
+beq 4 0 exception_store_amo_page_fault_wait
+label exception_store_amo_page_fault_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+jal 0 exception_return
+
+
+label exception_machine_timer
+lui 5 1
+slli 5 5 51
+addi 5 5 7
+bne 4 5 exception_return
+ld 17 3 8
+addi 4 17 0
+call 1 process_store
+addi 4 17 0
+call 1 process_schedule
+call 1 process_pick
+bne 4 0 exception_machine_timer_load_process
+label exception_machine_timer_wait
+fence rw rw
+sd 0 16 0
+call 1 clock_wait
+lui 4 1
+label exception_machine_timer_lock
+amoswapd 5 16 4
+bne 5 0 exception_machine_timer_lock
+call 1 process_pick
+beq 4 0 exception_machine_timer_wait
+label exception_machine_timer_load_process
+sd 4 3 8
+call 1 process_load
+ld 4 3 8
+call 1 process_protect
+call 1 clock_interrupt
+
+
+label exception_return
+fence rwio rwio
+sd 0 16 0
+ld 1 3 16
+ld 2 3 24
+# 3 last
+ld 4 3 40
+ld 5 3 48
+ld 6 3 56
+ld 7 3 64
+ld 8 3 72
+ld 9 3 80
+ld 10 3 88
+ld 11 3 96
+ld 12 3 104
+ld 13 3 112
+ld 14 3 120
+ld 15 3 128
+ld 16 3 136
+ld 17 3 144
+ld 18 3 152
+ld 19 3 160
+ld 20 3 168
+ld 21 3 176
+ld 22 3 184
+ld 23 3 192
+ld 24 3 200
+ld 25 3 208
+ld 26 3 216
+ld 27 3 224
+ld 28 3 232
+ld 29 3 240
+ld 30 3 248
+ld 31 3 256
+ld 3 3 32
+mret

@@ -1,0 +1,1697 @@
+# sifive SPI 0 multi media card byte layout
+# 0 sckdiv
+# 4 sckmode
+# 8 -
+# 16 csid
+# 20 csdef
+# 24 csmode
+# 28 -
+# 40 delay0
+# 44 delay1
+# 48 -
+# 64 fmt
+# 68 -
+# 72 txdata
+# 76 rxdata
+# 80 txmark
+# 84 rxmark
+# 88 -
+# 96 fctrl
+# 100 ffmt
+# 104 -
+# 112 ie
+# 116 ip
+# 120
+
+# data register bit layout
+# 0 -
+# 1 cyclic redundancy check
+# 8 error correction code
+# 10 file format
+# 12 temporary write protection flag
+# 13 permanent write protection flag
+# 14 copy flag
+# 15 selected group file format indication
+# 16 -
+# 21 write partial block flag
+# 22 maximum write data block length
+# 26 read to write speed factor
+# 29 manufacturer default error correction code
+# 31 write protect group flag
+# 32 write protect group size
+# 37 erase group size
+# 42 erase sector size
+# 47 device size multiplier
+# 50 maximum write current
+# 53 minimum write current
+# 56 maximum read current
+# 59 minimum read current
+# 62 device size
+# 74 -
+# 76 driver stage implemented flag
+# 77 read block misalignment flag
+# 78 write block misalignment flag
+# 79 partial block for read flag
+# 80 maximum read data block length
+# 84 card command classes
+# 96 maximum data transfer rate
+# 104 data read access time 2
+# 112 data read access time 1
+# 120 -
+# 122 protocol version
+# 126 structure version
+# 128
+
+# identification register bit layout
+# 0 manufacturer identification
+# 8 original equipment manufacturer identification
+# 24 product name
+# 72 product revision
+# 80 serial number
+# 112 manufacturing date
+# 120 cyclic redundancy check
+# 127 always one
+# 128
+
+align 4
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# 5 clock frequency in hertz
+# 6 chip select
+# out
+# 4 status
+label sifive_SPI_0_multi_media_card_initialize
+addi 2 2 -32
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+
+# configure the clock divisor to 400000 hertz
+lui 7 195
+addi 7 7 1280
+divu 7 5 7
+beq 7 0 8
+addi 7 7 -1
+sw 7 4 0
+
+sw 0 4 4
+sw 6 4 16
+addi 7 0 -1
+sw 7 4 20
+sw 0 4 24
+lui 7 16
+addi 7 7 1
+sw 7 4 40
+addi 7 0 1
+sw 7 4 44
+lui 7 128
+sw 7 4 64
+sw 0 4 80
+sw 0 4 84
+sw 0 4 112
+
+# set the chip to idle
+addi 16 4 0
+addi 17 5 0
+addi 7 0 2
+sw 7 4 24
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 64
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 149
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the command response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_initialize_await_status
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_initialize_await_status
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_initialize_await_status
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_initialize_await_status
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_initialize_await_status
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_initialize_await_status
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_initialize_await_status
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+bne 4 0 sifive_SPI_0_multi_media_card_initialize_failure
+
+label sifive_SPI_0_multi_media_card_initialize_await_status
+lui 18 1
+label sifive_SPI_0_multi_media_card_initialize_await_status_loop
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 65
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 249
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the command response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_initialize_await_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_initialize_await_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_initialize_await_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_initialize_await_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_initialize_await_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_initialize_await_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_initialize_await_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+label sifive_SPI_0_multi_media_card_initialize_await_status_response
+beq 4 0 sifive_SPI_0_multi_media_card_initialize_end
+addi 18 18 -1
+bne 18 0 sifive_SPI_0_multi_media_card_initialize_await_status_loop
+
+label sifive_SPI_0_multi_media_card_initialize_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 32
+jalr 0 1 0
+
+label sifive_SPI_0_multi_media_card_initialize_end
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+
+# increase the clock divisor to 20000000 hertz
+lui 4 9766
+addi 4 4 -1536
+divu 4 17 4
+beq 4 0 8
+addi 4 4 -1
+sw 4 16 0
+
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 32
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# out
+# 4 status
+label sifive_SPI_0_multi_media_card_enable_CRC
+addi 2 2 -16
+sd 1 2 0
+sd 16 2 8
+
+addi 5 0 2
+sw 5 4 24
+addi 16 4 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 123
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 1
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 131
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the command response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_enable_CRC_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_enable_CRC_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_enable_CRC_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_enable_CRC_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_enable_CRC_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_enable_CRC_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_enable_CRC_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+label sifive_SPI_0_multi_media_card_enable_CRC_response
+bne 4 0 sifive_SPI_0_multi_media_card_enable_CRC_failure
+
+# end the command
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+label sifive_SPI_0_multi_media_card_enable_CRC_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# out
+# 4 status
+label sifive_SPI_0_multi_media_card_set_block_length_512
+addi 2 2 -16
+sd 1 2 0
+sd 16 2 8
+
+addi 5 0 2
+sw 5 4 24
+addi 16 4 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 80
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 2
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 21
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the command response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_set_block_length_512_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_set_block_length_512_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_set_block_length_512_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_set_block_length_512_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_set_block_length_512_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_set_block_length_512_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_set_block_length_512_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+label sifive_SPI_0_multi_media_card_set_block_length_512_response
+bne 4 0 sifive_SPI_0_multi_media_card_set_block_length_512_failure
+
+# end the command
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+label sifive_SPI_0_multi_media_card_set_block_length_512_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# out
+# 4 size
+label sifive_SPI_0_multi_media_card_size
+addi 2 2 -56
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+
+# read the data register
+addi 5 0 2
+sw 5 4 24
+addi 16 4 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 9
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the command response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_size_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_size_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_size_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_size_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_size_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_size_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_size_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+label sifive_SPI_0_multi_media_card_size_command_response
+bne 4 0 sifive_SPI_0_multi_media_card_size_failure
+
+# wait for a data token or data error token
+addi 17 0 8
+label sifive_SPI_0_multi_media_card_size_command_wait
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 5 0 254
+beq 4 5 sifive_SPI_0_multi_media_card_size_command_data
+andi 5 4 224
+beq 5 0 sifive_SPI_0_multi_media_card_size_failure
+addi 17 17 -1
+bne 17 0 sifive_SPI_0_multi_media_card_size_command_wait
+jal 0 sifive_SPI_0_multi_media_card_size_failure
+
+label sifive_SPI_0_multi_media_card_size_command_data
+addi 17 2 40
+addi 18 0 16
+lui 19 0
+label sifive_SPI_0_multi_media_card_size_command_data_loop
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sb 4 17 0
+addi 5 4 0
+addi 4 19 0
+call 1 sifive_SPI_0_multi_media_card_CRC_16
+addi 19 4 0
+addi 17 17 1
+addi 18 18 -1
+bne 18 0 sifive_SPI_0_multi_media_card_size_command_data_loop
+
+# compare the cyclic redundancy check
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+slli 17 4 8
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+add 17 17 4
+bne 17 19 sifive_SPI_0_multi_media_card_size_failure
+
+# validate the structure version
+lbu 5 2 40
+srli 5 5 6
+bne 5 0 sifive_SPI_0_multi_media_card_size_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+
+# read block length
+lbu 4 2 45
+andi 4 4 15
+# device size
+lbu 5 2 46
+lbu 6 2 47
+lbu 7 2 48
+andi 5 5 3
+slli 5 5 8
+add 5 5 6
+slli 5 5 2
+srli 7 7 6
+add 5 5 7
+# device size multiplier
+lbu 6 2 49
+lbu 7 2 50
+andi 6 6 3
+slli 6 6 1
+srli 7 7 7
+add 6 6 7
+# size=2^(device_size_multiplier+2)*(device_size+1)*2^maximum_read_block_length
+addi 7 0 1
+sll 4 7 4
+addi 5 5 1
+addi 6 6 2
+sll 6 7 6
+mul 4 4 5
+mul 4 4 6
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 56
+jalr 0 1 0
+
+label sifive_SPI_0_multi_media_card_size_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 56
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# 5 block address
+# 6 address
+# out
+# 4 status
+label sifive_SPI_0_multi_media_card_read_block
+addi 2 2 -40
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+
+addi 7 0 2
+sw 7 4 24
+addi 16 4 0
+addi 17 5 0
+addi 18 6 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 81
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 24
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 16
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+andi 5 17 255
+call 1 sifive_SPI_0_multi_media_card_data
+lui 4 0
+addi 5 0 81
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 24
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 16
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+andi 5 17 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+slli 5 4 1
+addi 5 5 1
+addi 4 16 0
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the command response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+label sifive_SPI_0_multi_media_card_read_block_response
+bne 4 0 sifive_SPI_0_multi_media_card_read_block_failure
+
+# wait for a data token or data error token
+addi 17 0 512
+label sifive_SPI_0_multi_media_card_read_block_wait
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 5 0 254
+beq 4 5 sifive_SPI_0_multi_media_card_read_block_data
+andi 5 4 224
+beq 5 0 sifive_SPI_0_multi_media_card_read_block_failure
+addi 17 17 -1
+bne 17 0 sifive_SPI_0_multi_media_card_read_block_wait
+jal 0 sifive_SPI_0_multi_media_card_read_block_failure
+
+label sifive_SPI_0_multi_media_card_read_block_data
+lui 17 0
+addi 19 0 512
+label sifive_SPI_0_multi_media_card_read_block_data_loop
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sb 4 18 0
+addi 5 4 0
+addi 4 17 0
+call 1 sifive_SPI_0_multi_media_card_CRC_16
+addi 17 4 0
+addi 18 18 1
+addi 19 19 -1
+bne 19 0 sifive_SPI_0_multi_media_card_read_block_data_loop
+
+# compare the cyclic redundancy check
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+slli 18 4 8
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+add 18 18 4
+bne 17 18 sifive_SPI_0_multi_media_card_read_block_failure
+
+# end the command
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 40
+jalr 0 1 0
+
+label sifive_SPI_0_multi_media_card_read_block_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 40
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# 5 block address
+# 6 address
+# 7 size
+# out
+# 4 status
+label sifive_SPI_0_multi_media_card_read_blocks
+addi 2 2 -48
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+sd 20 2 40
+
+addi 8 0 2
+sw 8 4 24
+addi 16 4 0
+addi 17 5 0
+addi 18 6 0
+addi 19 7 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 82
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 24
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 16
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+andi 5 17 255
+call 1 sifive_SPI_0_multi_media_card_data
+lui 4 0
+addi 5 0 82
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 24
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 16
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+andi 5 17 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+slli 5 4 1
+addi 5 5 1
+addi 4 16 0
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the command response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+label sifive_SPI_0_multi_media_card_read_blocks_command_response
+bne 4 0 sifive_SPI_0_multi_media_card_read_blocks_failure
+
+label sifive_SPI_0_multi_media_card_read_blocks_data_wait
+lui 17 1
+label sifive_SPI_0_multi_media_card_read_blocks_data_wait_loop
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 5 0 254
+beq 4 5 sifive_SPI_0_multi_media_card_read_blocks_data_start
+andi 5 4 224
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_break
+addi 17 17 -1
+bne 17 0 sifive_SPI_0_multi_media_card_read_blocks_data_wait_loop
+jal 0 sifive_SPI_0_multi_media_card_read_blocks_break
+
+label sifive_SPI_0_multi_media_card_read_blocks_data_start
+lui 17 0
+addi 20 0 512
+label sifive_SPI_0_multi_media_card_read_blocks_data_loop
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sb 4 18 0
+addi 5 4 0
+addi 4 17 0
+call 1 sifive_SPI_0_multi_media_card_CRC_16
+addi 17 4 0
+addi 18 18 1
+addi 20 20 -1
+bne 20 0 sifive_SPI_0_multi_media_card_read_blocks_data_loop
+
+# compare the cyclic redundancy check
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+slli 20 4 8
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+add 20 20 4
+bne 17 20 sifive_SPI_0_multi_media_card_read_blocks_break
+
+# next block
+addi 4 0 512
+addi 19 19 -512
+bgeu 19 4 sifive_SPI_0_multi_media_card_read_blocks_data_wait
+
+# stop the command
+addi 4 16 0
+addi 5 0 76
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 97
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the stop response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_stop_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_stop_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_stop_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_stop_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_stop_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_stop_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_read_blocks_stop_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+label sifive_SPI_0_multi_media_card_read_blocks_stop_response
+bne 4 0 sifive_SPI_0_multi_media_card_read_blocks_failure
+
+# end the command
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+addi 2 2 48
+jalr 0 1 0
+
+label sifive_SPI_0_multi_media_card_read_blocks_break
+addi 4 16 0
+addi 5 0 76
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 97
+call 1 sifive_SPI_0_multi_media_card_data
+
+# discard the break response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_read_blocks_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_read_blocks_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_read_blocks_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_read_blocks_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_read_blocks_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_read_blocks_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 128
+beq 4 0 sifive_SPI_0_multi_media_card_read_blocks_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+
+label sifive_SPI_0_multi_media_card_read_blocks_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+addi 2 2 48
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# 5 block address
+# 6 address
+label sifive_SPI_0_multi_media_card_write_block
+addi 2 2 -40
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+
+addi 7 0 2
+sw 7 4 24
+addi 16 4 0
+addi 17 5 0
+addi 18 6 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 88
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 24
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 16
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+andi 5 17 255
+call 1 sifive_SPI_0_multi_media_card_data
+lui 4 0
+addi 5 0 88
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 24
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 16
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+slli 5 4 1
+addi 5 5 1
+addi 4 16 0
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the command response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_block_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+label sifive_SPI_0_multi_media_card_write_block_response
+bne 4 0 sifive_SPI_0_multi_media_card_write_block_failure
+
+# send the block data
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 254
+call 1 sifive_SPI_0_multi_media_card_data
+lui 17 0
+addi 19 0 512
+label sifive_SPI_0_multi_media_card_write_block_data_loop
+addi 4 16 0
+lbu 5 18 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 17 0
+lbu 5 18 0
+call 1 sifive_SPI_0_multi_media_card_CRC_16
+addi 17 4 0
+addi 18 18 1
+addi 19 19 -1
+bne 19 0 sifive_SPI_0_multi_media_card_write_block_data_loop
+
+# send the cyclic redundancy check
+addi 4 16 0
+srli 5 17 8
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+andi 5 17 255
+call 1 sifive_SPI_0_multi_media_card_data
+
+# check data response for success
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 31
+addi 5 0 5
+bne 4 5 sifive_SPI_0_multi_media_card_write_block_failure
+addi 17 0 512
+label sifive_SPI_0_multi_media_card_write_block_busy
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+bne 4 0 sifive_SPI_0_multi_media_card_write_block_success
+addi 17 17 -1
+bne 17 0 sifive_SPI_0_multi_media_card_write_block_busy
+
+label sifive_SPI_0_multi_media_card_write_block_success
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 40
+jalr 0 1 0
+
+label sifive_SPI_0_multi_media_card_write_block_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 40
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# 5 block address
+# 6 address
+# 7 size
+# out
+# 4 status
+label sifive_SPI_0_multi_media_card_write_blocks
+addi 2 2 -48
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+sd 20 2 40
+
+addi 8 0 2
+sw 8 4 24
+addi 16 4 0
+addi 17 5 0
+addi 18 6 0
+addi 19 7 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 89
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 24
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 16
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+andi 5 17 255
+call 1 sifive_SPI_0_multi_media_card_data
+lui 4 0
+addi 5 0 89
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 24
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 16
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+andi 5 17 255
+call 1 sifive_SPI_0_multi_media_card_CRC_7
+slli 5 4 1
+addi 5 5 1
+addi 4 16 0
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the command response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_command_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+label sifive_SPI_0_multi_media_card_write_blocks_command_response
+bne 4 0 sifive_SPI_0_multi_media_card_write_blocks_failure
+
+label sifive_SPI_0_multi_media_card_write_blocks_data
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 254
+call 1 sifive_SPI_0_multi_media_card_data
+lui 17 0
+addi 20 0 512
+label sifive_SPI_0_multi_media_card_write_blocks_data_loop
+addi 4 16 0
+lbu 5 18 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 17 0
+lbu 5 18 0
+call 1 sifive_SPI_0_multi_media_card_CRC_16
+addi 17 4 0
+addi 18 18 1
+addi 20 20 -1
+bne 20 0 sifive_SPI_0_multi_media_card_write_blocks_data_loop
+
+# send the cyclic redundancy check
+addi 4 16 0
+srli 5 17 8
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+andi 5 17 255
+call 1 sifive_SPI_0_multi_media_card_data
+
+# check the data response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 4 4 31
+addi 5 0 5
+bne 4 5 sifive_SPI_0_multi_media_card_write_blocks_break
+lui 17 1
+label sifive_SPI_0_multi_media_card_write_blocks_data_busy
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+bne 4 0 sifive_SPI_0_multi_media_card_write_blocks_data_next
+addi 17 17 -1
+bne 17 0 sifive_SPI_0_multi_media_card_write_blocks_data_busy
+jal 0 sifive_SPI_0_multi_media_card_write_blocks_break
+
+label sifive_SPI_0_multi_media_card_write_blocks_data_next
+addi 4 0 512
+addi 19 19 -512
+bgeu 19 4 sifive_SPI_0_multi_media_card_write_blocks_data
+
+label sifive_SPI_0_multi_media_card_write_blocks_stop
+addi 4 16 0
+addi 5 0 253
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+lui 17 1
+label sifive_SPI_0_multi_media_card_write_blocks_stop_busy
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+bne 4 0 sifive_SPI_0_multi_media_card_write_blocks_status
+addi 17 17 -1
+bne 17 0 sifive_SPI_0_multi_media_card_write_blocks_stop_busy
+
+label sifive_SPI_0_multi_media_card_write_blocks_status
+addi 4 16 0
+addi 5 0 77
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 13
+call 1 sifive_SPI_0_multi_media_card_data
+
+# wait for the status response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+andi 5 4 128
+beq 5 0 sifive_SPI_0_multi_media_card_write_blocks_status_response
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+label sifive_SPI_0_multi_media_card_write_blocks_status_response
+bne 4 0 sifive_SPI_0_multi_media_card_write_blocks_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+bne 4 0 sifive_SPI_0_multi_media_card_write_blocks_failure
+
+# end the command
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 0
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+addi 2 2 48
+jalr 0 1 0
+
+label sifive_SPI_0_multi_media_card_write_blocks_break
+addi 4 16 0
+addi 5 0 253
+call 1 sifive_SPI_0_multi_media_card_data
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+lui 17 1
+label sifive_SPI_0_multi_media_card_write_blocks_break_busy
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+bne 4 0 sifive_SPI_0_multi_media_card_write_blocks_failure
+addi 17 17 -1
+bne 17 0 sifive_SPI_0_multi_media_card_write_blocks_break_busy
+
+label sifive_SPI_0_multi_media_card_write_blocks_failure
+addi 4 16 0
+addi 5 0 255
+call 1 sifive_SPI_0_multi_media_card_data
+sw 0 16 24
+lui 4 1
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+ld 20 2 40
+addi 2 2 48
+jalr 0 1 0
+
+
+# in
+# 4 cyclic redundancy check
+# 5 byte
+# out
+# 4 cyclic redundancy check
+label sifive_SPI_0_multi_media_card_CRC_7
+slli 4 4 1
+xor 4 4 5
+# generator polynomial x^7 + x^3 + 1
+addi 6 0 137
+
+srli 7 4 7
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 7
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 7
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 7
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 7
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 7
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 7
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 7
+mul 7 7 6
+xor 4 4 7
+jalr 0 1 0
+
+
+# in
+# 4 cyclic redundancy check
+# 5 byte
+# out
+# 4 cyclic redundancy check
+label sifive_SPI_0_multi_media_card_CRC_16
+slli 5 5 8
+xor 4 4 5
+# generator polynomial x^16 + x^12 + x^5 + 1
+lui 6 17
+addi 6 6 33
+
+slli 4 4 1
+srli 7 4 16
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 16
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 16
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 16
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 16
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 16
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 16
+mul 7 7 6
+xor 4 4 7
+
+slli 4 4 1
+srli 7 4 16
+mul 7 7 6
+xor 4 4 7
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 multi media card address
+# 5 data
+# out
+# 4 data
+label sifive_SPI_0_multi_media_card_data
+lw 6 4 72
+blt 6 0 -4
+sw 5 4 72
+lw 6 4 76
+blt 6 0 -4
+andi 4 6 255
+jalr 0 1 0

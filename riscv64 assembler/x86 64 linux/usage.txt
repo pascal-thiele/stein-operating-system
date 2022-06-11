@@ -1,0 +1,4 @@
+The stein riscv64 assembler for x86 64 linux takes one or more files of american standard code for information interchange encoded stein riscv64 assembly language and translates them into one file of riscv64 instructions. At least the destination file path and one source file path have to be specified. Multiple source files are assembled in the order they are specified.
+
+# example command line
+"stein riscv64 assembler" destination_file_path source_file_path_1 source_file_path_2 source_file_path_n

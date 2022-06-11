@@ -1,0 +1,335 @@
+# sifive SPI 0 micron M25P80 byte layout
+# 0 sckdiv
+# 4 sckmode
+# 8 -
+# 16 csid
+# 20 csdef
+# 24 csmode
+# 28 -
+# 40 delay0
+# 44 delay1
+# 48 -
+# 64 fmt
+# 68 -
+# 72 txdata
+# 76 rxdata
+# 80 txmark
+# 84 rxmark
+# 88 -
+# 96 fctrl
+# 100 ffmt
+# 104 -
+# 112 ie
+# 116 ip
+# 120
+
+# status register bit layout
+# 0 write in progress if high
+# 1 write is enabled if high
+# 2 block zero is write protected if high
+# 3 block one is write protected if high
+# 4 block two is write protected if high
+# 5 -
+# 7 status register is write protected if high
+
+# Sectors are contiguous address ranges, with an address that is a multiple of 65536 bytes and a size of 65536 bytes.
+# Pages are contiguous address ranges, with an address that is a multiple of 256 bytes and a size of 256 bytes.
+
+align 4
+
+
+# in
+# 4 sifive SPI 0 micron M25P80 address
+# 5 clock frequency
+# 6 chip select
+label sifive_SPI_0_micron_M25P80_initialize
+# configure the frequency to 20000000 hertz
+lui 7 9766
+addi 7 7 -1536
+divu 5 5 7
+beq 5 0 8
+addi 5 5 -1
+sw 5 4 0
+sw 0 4 4
+sw 6 4 16
+addi 7 0 -1
+sw 7 4 20
+sw 0 4 24
+lui 7 16
+addi 7 7 1
+sw 7 4 40
+addi 7 0 1
+sw 7 4 44
+lui 7 128
+sw 7 4 64
+sw 0 4 80
+sw 0 4 84
+sw 0 4 112
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 micron M25P80 address
+# out
+# 4 identification
+label sifive_SPI_0_micron_M25P80_read_identification
+addi 2 2 -24
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+addi 16 4 0
+addi 5 0 2
+sw 5 4 24
+addi 5 0 159
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_micron_M25P80_data
+slli 17 4 8
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_micron_M25P80_data
+add 17 17 4
+slli 17 17 8
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_micron_M25P80_data
+add 4 4 17
+sw 0 16 24
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+addi 2 2 24
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 micron M25P80 address
+# out
+# 4 status register
+label sifive_SPI_0_micron_M25P80_read_status_register
+addi 2 2 -16
+sd 1 2 0
+sd 16 2 8
+addi 16 4 0
+addi 5 0 2
+sw 5 4 24
+addi 5 0 5
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_micron_M25P80_data
+sw 0 16 24
+ld 1 2 0
+ld 16 2 8
+addi 2 2 16
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 micron M25P80 address
+# 5 source address in device
+# 6 destination address in memory
+# 7 size
+label sifive_SPI_0_micron_M25P80_read
+addi 2 2 -40
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+addi 16 4 0
+addi 17 5 0
+addi 18 6 0
+addi 19 7 0
+addi 8 0 2
+sw 8 4 24
+addi 5 0 3
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+srli 5 17 16
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+andi 5 17 255
+call 1 sifive_SPI_0_micron_M25P80_data
+label sifive_SPI_0_micron_M25P80_read_loop
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_micron_M25P80_data
+sb 4 18 0
+addi 18 18 1
+addi 19 19 -1
+bne 19 0 sifive_SPI_0_micron_M25P80_read_loop
+sw 0 16 24
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 40
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 micron M25P80 address
+# 5 sector address
+label sifive_SPI_0_micron_M25P80_erase_sector
+addi 2 2 -24
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+
+addi 16 4 0
+addi 17 5 0
+addi 5 0 6
+call 1 sifive_SPI_0_micron_M25P80_data
+
+addi 6 0 2
+sw 6 4 24
+addi 4 16 0
+addi 5 0 216
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+srli 5 17 16
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+srli 5 17 8
+andi 5 5 255
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+andi 5 17 255
+call 1 sifive_SPI_0_micron_M25P80_data
+sw 0 16 24
+
+addi 4 0 2
+sw 4 16 24
+addi 4 16 0
+addi 5 0 5
+call 1 sifive_SPI_0_micron_M25P80_data
+label sifive_SPI_0_micron_M25P80_erase_sector_wait
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_micron_M25P80_data
+andi 4 4 1
+bne 4 0 sifive_SPI_0_micron_M25P80_erase_sector_wait
+sw 0 16 24
+
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+addi 2 2 24
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 micron M25P80 address
+# 5 source address in memory
+# 6 destination address in device
+label sifive_SPI_0_micron_M25P80_program_sector
+addi 2 2 -40
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+sd 19 2 32
+addi 16 4 0
+addi 17 5 0
+addi 18 6 0
+addi 19 0 256
+label sifive_SPI_0_micron_M25P80_program_sector_loop
+addi 4 16 0
+addi 5 17 0
+addi 6 18 0
+call 1 sifive_SPI_0_micron_M25P80_program_page
+addi 17 17 256
+addi 18 18 256
+addi 19 19 -1
+bne 19 0 sifive_SPI_0_micron_M25P80_program_sector_loop
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+ld 19 2 32
+addi 2 2 40
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 micron M25P80 address
+# 5 source address in memory
+# 6 destination address in device
+label sifive_SPI_0_micron_M25P80_program_page
+addi 2 2 -32
+sd 1 2 0
+sd 16 2 8
+sd 17 2 16
+sd 18 2 24
+
+addi 16 4 0
+addi 17 5 0
+addi 18 6 0
+addi 5 0 6
+call 1 sifive_SPI_0_micron_M25P80_data
+
+addi 4 16 0
+addi 5 0 2
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+srli 5 18 16
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+srli 5 18 8
+andi 5 5 255
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 4 16 0
+andi 5 18 255
+call 1 sifive_SPI_0_micron_M25P80_data
+
+addi 18 0 256
+label sifive_SPI_0_micron_M25P80_program_page_loop
+addi 4 16 0
+lbu 5 17 0
+call 1 sifive_SPI_0_micron_M25P80_data
+addi 17 17 1
+addi 18 18 -1
+bne 18 0 sifive_SPI_0_micron_M25P80_program_page_loop
+sw 0 16 24
+
+addi 4 0 2
+sw 4 16 24
+addi 4 16 0
+addi 5 0 5
+call 1 sifive_SPI_0_micron_M25P80_data
+label sifive_SPI_0_micron_M25P80_program_page_wait
+addi 4 16 0
+lui 5 0
+call 1 sifive_SPI_0_micron_M25P80_data
+andi 4 4 1
+bne 4 0 sifive_SPI_0_micron_M25P80_program_page_wait
+sw 0 16 24
+
+ld 1 2 0
+ld 16 2 8
+ld 17 2 16
+ld 18 2 24
+addi 2 2 32
+jalr 0 1 0
+
+
+# in
+# 4 sifive SPI 0 micron M25P80 address
+# 5 data
+# out
+# 4 data
+label sifive_SPI_0_micron_M25P80_data
+lw 6 4 72
+blt 6 0 -4
+sw 5 4 72
+lw 6 4 76
+blt 6 0 -4
+andi 4 6 255
+jalr 0 1 0

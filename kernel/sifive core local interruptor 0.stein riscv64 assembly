@@ -1,0 +1,44 @@
+# sifive core local interruptor 0 byte layout
+# 0 software interrupt pending for hardware thread 0
+# 4 software interrupt pending for hardware thread 1
+# 8 repeat
+# 16384 time comparator for hardware thread 0
+# 16392 time comparator for hardware thread 1
+# 16400 repeat
+# 49144 time
+# 49152
+
+align 4
+
+
+# in
+# 4 sifive core local interruptor 0 address
+# 5 time to count
+label sifive_core_local_interruptor_0_set
+lui 6 4
+add 6 6 4
+csrrs 7 0 mhartid
+slli 7 7 3
+add 6 6 7
+lui 7 12
+addi 7 7 -8
+add 7 7 4
+ld 7 7 0
+add 7 7 5
+sd 7 6 0
+jalr 0 1 0
+
+
+# in
+# 4 sifive core local interruptor 0 address
+# 5 time to wait
+label sifive_core_local_interruptor_0_wait
+lui 6 12
+addi 6 6 -8
+add 4 4 6
+ld 6 4 0
+add 5 5 6
+label sifive_core_local_interruptor_0_wait_loop
+ld 6 4 0
+bltu 6 5 sifive_core_local_interruptor_0_wait_loop
+jalr 0 1 0

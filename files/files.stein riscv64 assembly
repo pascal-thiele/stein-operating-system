@@ -1,0 +1,145 @@
+# integer register usage
+# 0 zero
+# 1 return address
+# 2 stack pointer
+# 3 message address
+# 4 temporary
+# 5 temporary
+# 6 temporary
+# 7 temporary
+# 8 temporary
+# 9 temporary
+# 10 temporary
+# 11 temporary
+# 12 temporary
+# 13 temporary
+# 14 temporary
+# 15 temporary
+# 16 saved
+# 17 saved
+# 18 saved
+# 19 saved
+# 20 saved
+# 21 saved
+# 22 saved
+# 23 saved
+# 24 saved
+# 25 saved
+# 26 saved
+# 27 saved
+# 28 saved
+# 29 saved
+# 30 saved
+# 31 saved
+
+# message byte layout
+# 0 status
+# 8 sender name
+# 264 data
+# 520
+
+align 4
+
+
+label start
+ll 2 stack
+ll 3 message
+
+# register the program name
+addi 8 0 6
+ll 9 files_tag
+ecall
+beq 8 0 register_message
+addi 8 0 4
+ecall
+
+label register_message
+addi 8 0 9
+addi 9 3 0
+ecall
+
+# read device size
+addi 4 0 2
+sd 4 2 0
+addi 4 0 2
+sd 4 2 8
+label read_device_size_send_message
+addi 8 0 8
+ll 9 memory_tag
+addi 10 2 0
+ecall
+bne 8 0 read_device_size_send_message
+label read_device_size_await_answer
+ld 4 3 0
+beq 4 0 read_device_size_await_answer
+label read_device_size_allocate_serial
+addi 8 0 10
+lui 9 65552
+lui 10 1
+ecall
+bne 8 0 read_device_size_allocate_serial
+lui 4 65552
+addi 5 0 10
+ld 6 3 264
+remu 7 6 5
+divu 6 6 5
+remu 8 6 5
+divu 6 6 5
+remu 9 6 5
+divu 6 6 5
+remu 10 6 5
+divu 6 6 5
+remu 11 6 5
+divu 6 6 5
+remu 12 6 5
+divu 6 6 5
+remu 13 6 5
+divu 6 6 5
+remu 14 6 5
+addi 14 14 48
+sw 14 4 0
+addi 13 13 48
+sw 13 4 0
+addi 12 12 48
+sw 12 4 0
+addi 11 11 48
+sw 11 4 0
+addi 10 10 48
+sw 10 4 0
+addi 9 9 48
+sw 9 4 0
+addi 8 8 48
+sw 8 4 0
+addi 7 7 48
+sw 7 4 0
+sw 5 4 0
+addi 5 0 13
+sw 5 4 0
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+
+# allocate a buffer in the video service
+# ask the key service to stream input?
+# to do
+
+jal 0 0
+
+
+align 8
+
+label memory_tag
+string "memory"
+zero 232
+
+label files_tag
+string "files"
+zero 236
+
+zero 256
+label stack
+zero 256
+
+label message
+zero 520

@@ -1,0 +1,46 @@
+# file system header
+doubleword 1000000000000000000
+doubleword 15424
+
+# kernel
+doubleword 15440
+doubleword 1239192
+string "stein operating system"
+zero 168
+string "kernel"
+zero 232
+string "riscv64"
+zero 3300
+
+# memory
+doubleword 1254632
+doubleword 245408
+string "stein operating system"
+zero 168
+string "memory"
+zero 232
+string "riscv64"
+zero 228
+string "start"
+zero 3052
+
+# files
+doubleword 1500040
+doubleword 1840
+string "stein operating system"
+zero 168
+string "files"
+zero 236
+string "riscv64"
+zero 228
+string "start"
+zero 3052
+
+# placeholder file
+zero 3856
+
+include "kernel.riscv64"
+include "memory.riscv64"
+include "files.riscv64"
+
+align 2097152

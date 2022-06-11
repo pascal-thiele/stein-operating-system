@@ -1,0 +1,27 @@
+label entrance
+lui 16 0
+label wait
+addi 8 0 13
+ecall
+bltu 8 16 wait
+addi 16 8 0
+label allocate_serial
+addi 8 0 10
+lui 9 65552
+lui 10 1
+ecall
+bne 8 0 allocate_serial
+lui 4 65552
+addi 5 0 66
+sw 5 4 0
+addi 5 0 10
+sw 5 4 0
+addi 5 0 13
+sw 5 4 0
+addi 8 0 10
+lui 9 0
+lui 10 0
+ecall
+addi 16 16 2
+jal 0 wait
+align 4096

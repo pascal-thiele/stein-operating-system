@@ -1,0 +1,23 @@
+Memory implements drivers for external memory devices and limits access to address ranges in external memory devices to one process. No assumptions about the contained data in external memory devices are made. Therefore, memory is merely an abstraction to operate external memory devices from any amount of processes.
+
+Programs may communicate with memory through messages. The process name memory is the laie encoded text "memory". As part of some functions, memory sends a message back to the sender process. Memory attempts to answer only once, to allow more messages to be received immediately. Therefore, the sender process shall clear its message before communicating with memory, if an answer is expected.
+
+0 neutral
+
+1 check device existence
+Checks if a device exists. The device index is a doubleword at offset 8. If the device exists, memory answers with the lowermost doubleword set to zero, otherwise not zero.
+
+2 read device size
+Reads the amount of bytes a device contains. The device index is a doubleword at offset 8. Memory answers with the device size in the lowermost doubleword, but may be zero on failure.
+
+3 allocate
+Grants access to an address range in a device. Allocations are independent from the addressable memory and may be any value a doubleword can represent. The device index is a doubleword at offset 8, the address range address is a doubleword at offset 16 and the address range size is a doubleword at offset 24. If the allocation is successful, memory answers with the lowermost doubleword set to zero, not zero otherwise.
+
+4 free
+Revokes access to an address range in a device. The address range is identified by any contained address. The device index is a doubleword at offset 8 and the address is a doubleword at offset 16. If no allocation contains the address, the message is discarded.
+
+5 read
+Reads 248 bytes from an address in a device. All 248 bytes have to be contained in an allocation. The device index is a doubleword at offset 8 and the address is a doubleword at offset 16. On success, memory answers with the lowermost doubleword set to zero, followed by the 248 read bytes. On failure, the lowermost doubleword is not zero.
+
+6 write
+Writes 232 bytes to an address in a device. All 232 bytes have to be contained in an allocation. The device index is a doubleword at offset 8, the address is a doubleword at offset 16 and the data to write are 232 bytes at offset 24. On success, memory answers with the lowermost doubleword set to zero, otherwise not zero.
